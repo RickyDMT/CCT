@@ -21,7 +21,7 @@ if ~isempty(change)
             gameover = 1;
         else
             rectcolor(:,change(z)) = good;
-            if length(change) == (DIMS.grid_totes-CCT.var.num_bad(trial));
+            if length(change) == (DIMS.grid_totes - CCT.var.num_bad(trial));
                 gameover = 2;
             end
         end

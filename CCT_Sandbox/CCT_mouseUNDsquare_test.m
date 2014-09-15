@@ -1,4 +1,4 @@
-global KEY COLORS w winRect XCENTER YCENTER DIMS STIM CCT trial
+global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT trial
 
 KEY = struct;
 KEY.one = KbName('1!');
@@ -23,8 +23,8 @@ COLORS.GREEN = [0 255 0];
 COLORS.YELLOW = [255 255 0];
 
 DIMS = struct;
-DIMS.grid_row = 4;
-DIMS.grid_col = 2;
+DIMS.grid_row = 8;
+DIMS.grid_col = 4;
 DIMS.grid_totes = DIMS.grid_row*DIMS.grid_col;
 
 STIM = struct;
@@ -34,8 +34,11 @@ STIM.trials = 8;
 CCT = struct;
 %CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)]
 CCT.var.Trial= (1:STIM.trials)';
+CCT.var.trial_dur = repmat(10,STIM.trials,1); %change to BalanceTrials if/when want to vary trial time
 CCT.var.num_bad = BalanceTrials(STIM.trials,1,[1 3]);
-CCT.data.score = repmat(-999,STIM.trials,1);
+CCT.var.scorval = BalanceTrials(STIM.trials,1,[10 100]);
+CCT.data.trialscore = repmat(-999,STIM.trials,1);
+CCT.data.cumscore = repmat(-999,STIM.trials,1);     %This is cumulative score (pervert).
 
 %KbQueueCreate();
 %KbQueueStart(-1);
@@ -80,6 +83,12 @@ end
 [w, wRect]=Screen('OpenWindow', screenNumber, 0,winRect,32,2);
 
 %%
+%you can set the font sizes and styles here
+Screen('TextFont', w, 'Arial');
+%Screen('TextStyle', w, 1);
+Screen('TextSize',w,15);
+
+%%
 DrawFormattedText(w,'The CCT is ready to begin.\nPress any key to continue.','center','center',COLORS.WHITE);
 Screen('Flip',w);
 KbWait;
@@ -89,51 +98,19 @@ WaitSecs(2);
 %Present multiple trials.
 % for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
     for trial = 1:STIM.trials;
-        CCT.data.score(trial) = DoCCT();
+        CCT.data.trialscore(trial) = DoCCT();
+        CCT.data.cumscore(trial) = sum(CCT.data.trialscore(1:trial));
+        
     end
 %     %This is where inter-block questions go.
 %     DrawFormattedText(w,'Prepare yourself for Block 2','center','center',COLORS.WHITE);
 %     Screen('Flip',w);
 % end
 
-%WaitSecs(2);
-
-DrawFormattedText(w,'Mouse test. Go!','center','center',COLORS.GREEN);
-Screen('Flip',w);
-
-telap = 0;
-tstart = tic;
-% texttt = 'Press a button, I dare you.';
-while telap < 10;
-    telap = CountdownClock(tstart,10);
-    Screen('Flip',w);
-    [x,y,buttons] = GetMouse();
-    if buttons(1)
-        texttt = sprintf('You clicked at %d & %d.',x,y);
-        DrawFormattedText(w,texttt,'center',YCENTER-50,COLORS.BLUE);
-        telap = CountdownClock(tstart,10);
-        Screen('Flip',w);
-    else
-        DrawFormattedText(w,texttt,'center',YCENTER-50,COLORS.BLUE);
-        telap = CountdownClock(tstart,10);
-        Screen('Flip',w,0,1);
-    end
-end
-fprintf('%f',toc(tstart))
-
-DrawFormattedText(w,'Trrrrrhat is .','center',100,COLORS.GREEN);
-Screen('Flip',w,0,1);
-DrawFormattedText(w,'sssssassaa.','center','center',COLORS.GREEN);
+DrawFormattedText(w,'That concludes this stolen version \n of the Columbia Card Task.','center','center',COLORS.WHITE);
 Screen('Flip',w);
 WaitSecs(2);
+
 sca
-%%
-%you can set the font sizes and styles here
-% Screen('TextFont', w, 'Arial');
-% Screen('TextStyle', w, 1);
-% Screen('TextSize',w,20);
-% 
-%% Predetermine certain things like location of squares, etc.
-%playarea = winRECT(4)*(1/3); %Play area = lower 2/3 of screen.
-    
+
     

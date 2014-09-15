@@ -1,5 +1,5 @@
 function [ telap ] = CountdownClock( tstart,ttotes,varargin )
-%CountdownClock Puts a fucking clock on the scren.
+%CountdownClock Puts a fucking clock on the screen.
 %   Detailed explanation goes up yer ass.
 
 global w COLORS

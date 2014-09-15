@@ -3,18 +3,18 @@ function [ rects ] = DrawRectsGrid(varargin)
 %   Future added functionality:  Have it pick colors based on mouse
 %   selection.
 
-global XCENTER YCENTER DIMS
+global DIMS wRect
 
-XCENTER = 320; %for testing
-YCENTER = 240; %for testing
+xcenter = fix(wRect(3)/2);
+ycenter = fix(wRect(4)*(2/3));
 
 
 square_side = 50;
 gap = 10;
 %DIMS.grid_row = 4;
 %DIMS.grid_col = 2;
-squart_x = XCENTER-((square_side*DIMS.grid_row)+(gap*(DIMS.grid_row-1)))/2;
-squart_y = YCENTER-((square_side*DIMS.grid_col)+(gap*(DIMS.grid_col-1)))/2;
+squart_x = xcenter-((square_side*DIMS.grid_row)+(gap*(DIMS.grid_row-1)))/2;
+squart_y = ycenter-((square_side*DIMS.grid_col)+(gap*(DIMS.grid_col-1)))/2;
 
 rects = zeros(4,(DIMS.grid_totes));
 
