@@ -11,7 +11,7 @@ tstart = tic;
 trial_score = 0;
 
 clicked = zeros(DIMS.grid_totes,1);
-fail_list = randperm(DIMS.grid_totes,CCT.var.num_bad(trial));
+fail_list = randperm(DIMS.grid_totes,CCT.var.num_bad(trial)); 
 rects = DrawRectsGrid();                                    %creates parameters for drawing rectangles
 [rectcolor,gameover] = Click4Color(clicked,fail_list);      %chooses color for cards; tests for good/bad flip
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
@@ -51,7 +51,7 @@ while telap < 10;
                 %             Screen('Flip',w);
                 if gameover == 1; %If you have clicked a bad.
                     %BIOPAC PULSE
-                    trial_score = 0;
+                    trial_score = trial_score + CCT.var.lossval;
                     DrawFormattedText(w,'You lose.','center',endtext_loc_y,COLORS.RED);
                     Screen('FillRect',w,rectcolor,rects);
                     DoScoreboard();

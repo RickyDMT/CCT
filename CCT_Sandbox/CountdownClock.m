@@ -6,9 +6,9 @@ global w COLORS
 
 telap = round(toc(tstart));
 tleft = ttotes - telap;
-tdisp = sprintf('%02.0f',tleft);
+tdisp = sprintf('%02.0f',tleft); %NEED CHANGE: Add decimals!
 DrawFormattedText(w,tdisp,'center',20,COLORS.RED);
-%Screen('Flip',w);
+
 
 end
 

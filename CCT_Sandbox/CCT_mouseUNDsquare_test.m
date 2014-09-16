@@ -23,20 +23,21 @@ COLORS.GREEN = [0 255 0];
 COLORS.YELLOW = [255 255 0];
 
 DIMS = struct;
-DIMS.grid_row = 8;
-DIMS.grid_col = 4;
+DIMS.grid_row = 8; %These have to been even numbers...
+DIMS.grid_col = 4; %These have to been even numbers...
 DIMS.grid_totes = DIMS.grid_row*DIMS.grid_col;
 
 STIM = struct;
-%STIM.blocks = 2;
+%STIM.blocks = 3;
 STIM.trials = 8;
 
 CCT = struct;
 %CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)]
 CCT.var.Trial= (1:STIM.trials)';
-CCT.var.trial_dur = repmat(10,STIM.trials,1); %change to BalanceTrials if/when want to vary trial time
+CCT.var.trial_dur = repmat(18,STIM.trials,1);       %Sets timer for each trial
 CCT.var.num_bad = BalanceTrials(STIM.trials,1,[1 3]);
 CCT.var.scorval = BalanceTrials(STIM.trials,1,[10 100]);
+CCT.var.lossval = 0;                                %This determines loss amount
 CCT.data.trialscore = repmat(-999,STIM.trials,1);
 CCT.data.cumscore = repmat(-999,STIM.trials,1);     %This is cumulative score (pervert).
 
