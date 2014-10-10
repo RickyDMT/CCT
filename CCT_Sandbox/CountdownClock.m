@@ -4,9 +4,9 @@ function [ telap ] = CountdownClock( tstart,ttotes,varargin )
 
 global w COLORS
 
-telap = round(toc(tstart));
+telap = round(toc(tstart)*10)/10;
 tleft = ttotes - telap;
-tdisp = sprintf('%02.0f',tleft); %NEED CHANGE: Add decimals!
+tdisp = sprintf('%02.1f',tleft); %NEED CHANGE: Add decimals!
 DrawFormattedText(w,tdisp,'center',20,COLORS.RED);
 
 

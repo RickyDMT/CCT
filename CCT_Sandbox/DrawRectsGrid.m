@@ -28,5 +28,17 @@ for row = 1:DIMS.grid_row;
     end
 end
 
+% No clicks, please
+    rects(1,length(rects)+1)= xcenter - ((2*square_side)+1.5*gap);
+    rects(2,length(rects))= squart_y - ((square_side/2)+2*gap);
+    rects(3,length(rects))= xcenter - gap/2;
+    rects(4,length(rects))= squart_y - 2*gap;
+    
+% Just end it all!
+    rects(1,length(rects)+1)= xcenter + gap/2;
+    rects(2,length(rects))= squart_y - ((square_side/2)+2*gap);
+    rects(3,length(rects))= xcenter + ((2*square_side)+1.5*gap);
+    rects(4,length(rects))= squart_y - 2*gap;
+
 end
 

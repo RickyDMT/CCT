@@ -1,18 +1,19 @@
-global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT trial
+global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT trial rects IMAGE
 
 KEY = struct;
-KEY.one = KbName('1!');
-KEY.two = KbName('2@');
-KEY.tres = KbName('3#');
-KEY.four = KbName('4$');
-KEY.five = KbName('5%');
-KEY.six = KbName('6^');
-KEY.sev = KbName('7&');
-KEY.eight = KbName('8*');
-KEY.nine = KbName('9(');
-KEY.zero = KbName('0)');
-KEY.yes = KbName('y');
-KEY.no = KbName('n');
+KEY.select = KbName('SPACE'); %To end random trial selection
+% KEY.one = KbName('1!');
+% KEY.two = KbName('2@');
+% KEY.tres = KbName('3#');
+% KEY.four = KbName('4$');
+% KEY.five = KbName('5%');
+% KEY.six = KbName('6^');
+% KEY.sev = KbName('7&');
+% KEY.eight = KbName('8*');
+% KEY.nine = KbName('9(');
+% KEY.zero = KbName('0)');
+% KEY.yes = KbName('y');
+% KEY.no = KbName('n');
 
 COLORS = struct;
 COLORS.BLACK = [0 0 0];
@@ -21,6 +22,10 @@ COLORS.RED = [255 0 0];
 COLORS.BLUE = [0 0 255];
 COLORS.GREEN = [0 255 0];
 COLORS.YELLOW = [255 255 0];
+COLORS.start = COLORS.BLUE';    %starting color of cards
+COLORS.good = COLORS.GREEN';    %color of flipped good card
+COLORS.bad = COLORS.RED';       %color of flipped bad card
+COLORS.butt = [192 192 192]';   %color of buttons
 
 DIMS = struct;
 DIMS.grid_row = 8; %These have to been even numbers...
@@ -28,21 +33,33 @@ DIMS.grid_col = 4; %These have to been even numbers...
 DIMS.grid_totes = DIMS.grid_row*DIMS.grid_col;
 
 STIM = struct;
-%STIM.blocks = 3;
+STIM.blocks = 3;
 STIM.trials = 8;
 
 CCT = struct;
-%CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)]
+% CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)];
+% %This might just be different columns of data represnting each block...?
 CCT.var.Trial= (1:STIM.trials)';
-CCT.var.trial_dur = repmat(18,STIM.trials,1);       %Sets timer for each trial
-CCT.var.num_bad = BalanceTrials(STIM.trials,1,[1 3]);
-CCT.var.scorval = BalanceTrials(STIM.trials,1,[10 100]);
-CCT.var.lossval = 0;                                %This determines loss amount
+for g = 1:STIM.blocks;
+    CCT.var.trial_dur(1:STIM.trials,g) = repmat(18,STIM.trials,1);              %Sets timer for each trial. If same time every time, remove from loop.
+    CCT.var.num_bad(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[1 3]);      %Loss cards per trial
+    CCT.var.scorval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[10 100]);   %This is gain amount
+    CCT.var.lossval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[-10 -100]); %This determines loss amount
+end
 CCT.data.trialscore = repmat(-999,STIM.trials,1);
-CCT.data.cumscore = repmat(-999,STIM.trials,1);     %This is cumulative score (pervert).
+CCT.data.cumscore = repmat(-999,STIM.trials,1);             %This is cumulative score (pervert).
 
-%KbQueueCreate();
-%KbQueueStart(-1);
+
+% Pics for gain/loss
+try
+    gain_card = imread('card_gain.png');
+    loss_card = imread('card_loss.png');
+catch
+    error('Cannot load images.');
+    KbWait();
+    sca;
+end
+
 
 commandwindow;
 
@@ -59,7 +76,7 @@ Screen('Preference', 'SkipSyncTests', 1)
 
 screenNumber=max(Screen('Screens'));
 
-if DEBUG;
+if DEBUG==1;
     %create a rect for the screen
     winRect=[0 0 640 480];
     %establish the center points
@@ -87,7 +104,19 @@ end
 %you can set the font sizes and styles here
 Screen('TextFont', w, 'Arial');
 %Screen('TextStyle', w, 1);
-Screen('TextSize',w,15);
+Screen('TextSize',w,20);
+
+KbName('UnifyKeyNames');
+
+%% Rects & other constants based off rects
+rects = DrawRectsGrid();
+DIMS.endtext_loc_y = min(rects(2,:))-20;
+
+%% Set up images; needs to wait for screen setup.
+
+IMAGE = struct;
+IMAGE.gain = Screen('MakeTexture',w,gain_card);
+IMAGE.loss = Screen('MakeTexture',w,loss_card);
 
 %%
 DrawFormattedText(w,'The CCT is ready to begin.\nPress any key to continue.','center','center',COLORS.WHITE);
@@ -96,18 +125,28 @@ KbWait;
 Screen('Flip',w);
 WaitSecs(2);
 
-%Present multiple trials.
-% for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
+%% Present multiple trials & blocks.
+ for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
     for trial = 1:STIM.trials;
-        CCT.data.trialscore(trial) = DoCCT();
-        CCT.data.cumscore(trial) = sum(CCT.data.trialscore(1:trial));
+        %BIOPAC PULSE FOR START
+        CCT.data.trialscore(trial,block) = DoCCT();
+        CCT.data.cumscore(trial,block) = sum(CCT.data.trialscore(1:trial,block));
         
     end
 %     %This is where inter-block questions go.
-%     DrawFormattedText(w,'Prepare yourself for Block 2','center','center',COLORS.WHITE);
-%     Screen('Flip',w);
-% end
+    if block < STIM.blocks
+        endoblock = sprintf('Prepare for Block %d.',block+1);
+        DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE);
+        Screen('Flip',w);
+        KbWait();
+    end
+ end
 
+%% Randomized payout.
+
+
+
+%% End of task.
 DrawFormattedText(w,'That concludes this stolen version \n of the Columbia Card Task.','center','center',COLORS.WHITE);
 Screen('Flip',w);
 WaitSecs(2);

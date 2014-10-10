@@ -2,7 +2,7 @@ function [ score ] = DoCCT( varargin )
 %CCT Runs Columbia card task, trial-by-trial
 %   Coded by: ELK
 
-global w DIMS CCT trial YCENTER COLORS trial_score
+global w DIMS CCT trial COLORS trial_score rects IMAGE fail_list
 
 %Timer stuff
 tstart = tic;
@@ -12,23 +12,23 @@ trial_score = 0;
 
 clicked = zeros(DIMS.grid_totes,1);
 fail_list = randperm(DIMS.grid_totes,CCT.var.num_bad(trial)); 
-rects = DrawRectsGrid();                                    %creates parameters for drawing rectangles
-[rectcolor,gameover] = Click4Color(clicked,fail_list);      %chooses color for cards; tests for good/bad flip
+rectcolor = repmat(COLORS.start,1,(DIMS.grid_totes));
+rectcolor = [rectcolor COLORS.butt COLORS.butt];
+
+%[rectcolor,gameover] = Click4Color(clicked,fail_list);      %chooses color for cards; tests for good/bad flip
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
 DoScoreboard();                                             %Displays scores, trial, bads, etc.
 telap = CountdownClock(tstart,CCT.var.trial_dur(trial));    %Runs & displays countdown clock
 Screen('Flip',w);
 
-%Display end of trial words stuff
-endtext_loc_y = min(rects(2,:))-20;
+%Display end of trial words stuff - now a constant in main page
+%endtext_loc_y = min(rects(2,:))-20;
 
 %next_trial = 0; %using break instead of while w/next_trial
-while telap < 10;
+while telap < CCT.var.trial_dur;
 
     [x,y,button] = GetMouse();
     if button(1);
-        %         DrawFormattedText(w,'CLICK','center',YCENTER+150,COLORS.WHITE);
-        %         Screen('Flip',w,0,1);
         %test if mouse clicked in one of our precious boxes.
         %This creates arrays of 1s or 0s for > or < min/max dimensions
         xmin = rects(1,:)<=x;
@@ -40,48 +40,90 @@ while telap < 10;
         clickedonbox = find(xmin & xmax & ymin & ymax);
         
         if ~isempty(clickedonbox);
-            if clicked(clickedonbox) == 1;
-                %You have already clicked here. Ignore.
-            else
-                clicked(clickedonbox) = 1;
-                [rectcolor, gameover] = Click4Color(clicked,fail_list);
-                %             Screen('FillRect',w,rectcolor,rects);
-                %             telap = CountdownClock(tstart,10);
-                %             DoScoreboard();
-                %             Screen('Flip',w);
-                if gameover == 1; %If you have clicked a bad.
-                    %BIOPAC PULSE
-                    trial_score = trial_score + CCT.var.lossval;
-                    DrawFormattedText(w,'You lose.','center',endtext_loc_y,COLORS.RED);
-                    Screen('FillRect',w,rectcolor,rects);
-                    DoScoreboard();
-                    Screen('Flip',w);
-                    WaitSecs(2); % NEEDS CHANGE: to any key.
-                    
-                    break
-                elseif gameover ==2; %If you have run out of greens to click.
-                    %BIOPAC PULSE
-                    trial_score = trial_score + CCT.var.scorval(trial);
-                    DrawFormattedText(w,'You win.','center',endtext_loc_y,COLORS.RED);
-                    Screen('FillRect',w,rectcolor,rects);
-                    DoScoreboard();
-                    Screen('Flip',w);
-                    WaitSecs(2); % NEEDS CHANGE: to any key.
-                    
-                    break
+            if clickedonbox <= DIMS.grid_totes;  
+                if clicked(clickedonbox) == 1;
+                    %You have already clicked here. Ignore.
                 else
-                    trial_score = trial_score + CCT.var.scorval(trial);
-                    Screen('FillRect',w,rectcolor,rects);
-                    telap = CountdownClock(tstart,CCT.var.trial_dur(trial));
-                    DoScoreboard();
-                    Screen('Flip',w);
+                    clicked(clickedonbox) = 1;
+
+                    if ~isempty(fail_list(fail_list == clickedonbox)) %if you clicked on loss
+                    %if gameover == 1; %If you have clicked a bad.
+                        %BIOPAC PULSE
+                        trial_score = trial_score + CCT.var.lossval(trial);
+                        DrawFormattedText(w,'You lose.','center',DIMS.endtext_loc_y,COLORS.RED);
+                        %rectcolor = Reveal4Color(fail_list);
+                        %Screen('FillRect',w,rectcolor,rects);
+                        DoScoreboard();
+                        [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+                        Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+                        Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+                        Screen('Flip',w);
+                        WaitSecs(2); % NEEDS CHANGE: to any key.
+                        
+                        break
+                    elseif length(clicked(clicked==1)) == (DIMS.grid_totes - CCT.var.num_bad(trial));
+                    %elseif gameover ==2; %If you have run out of greens to click.
+                        %BIOPAC PULSE
+                        trial_score = trial_score + CCT.var.scorval(trial);
+                        DrawFormattedText(w,'You win.','center',DIMS.endtext_loc_y,COLORS.RED);
+%                         rectcolor = Reveal4Color(fail_list);
+%                         Screen('FillRect',w,rectcolor,rects);
+                        [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+                        Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+                        Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+                        DoScoreboard();
+                        Screen('Flip',w);
+                        WaitSecs(2); % NEEDS CHANGE: to any key.
+                        
+                        break
+                    else
+                        trial_score = trial_score + CCT.var.scorval(trial);
+                        Screen('FillRect',w,rectcolor,rects);
+                        [imagerects] = DrawImageRects(clicked);
+                        Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+                        telap = CountdownClock(tstart,CCT.var.trial_dur(trial));
+                        DoScoreboard();
+                        
+                        Screen('Flip',w);
+                    end
                 end
+            elseif clickedonbox == DIMS.grid_totes+1 && ~any(clicked); %No clicks please
+                %Biopac pulse
+                DrawFormattedText(w,'You have selected no clicks. Starting new trial.','center',DIMS.endtext_loc_y,COLORS.RED);
+%                 rectcolor = Reveal4Color(fail_list);
+%                 Screen('FillRect',w,rectcolor,rects);
+                DoScoreboard();
+                [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+                Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+                Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+                Screen('Flip',w);
+                WaitSecs(2); % NEEDS CHANGE: to any key.
+                
+                break
+            elseif clickedonbox == DIMS.grid_totes+2; %Just end it all!
+                %Biopac pulse
+                DrawFormattedText(w,'Moving to next trial!','center',DIMS.endtext_loc_y,COLORS.RED);
+%                 rectcolor = Reveal4Color(fail_list);
+%                 Screen('FillRect',w,rectcolor,rects);
+                DoScoreboard();
+                [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+                Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+                Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+                Screen('Flip',w);
+                WaitSecs(2); % NEEDS CHANGE: to any key.
+                
+                break
             end
-        else %check if "End Button" was pressed.
-            %If END Button, end trial, add score, pulse biopac
         end
       
-    else %no button was pressed; just update clock, re-flip everything else
+    elseif any(clicked) %no button was pressed recently; just update clock, re-flip everything else
+    telap = CountdownClock(tstart,CCT.var.trial_dur(trial));
+    Screen('FillRect',w,rectcolor,rects);
+    DoScoreboard();
+    Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+    Screen('Flip',w);
+    
+    else %no button ever pressed; updated & reflip everything
     telap = CountdownClock(tstart,CCT.var.trial_dur(trial));
     Screen('FillRect',w,rectcolor,rects);
     DoScoreboard();
@@ -90,9 +132,9 @@ while telap < 10;
     
 end
 
-if gameover == 0;
+if telap == CCT.var.trial_dur(trial);
     
-    DrawFormattedText(w,'Time is up.','center',endtext_loc_y,COLORS.RED);
+    DrawFormattedText(w,'Time is up.','center',DIMS.endtext_loc_y,COLORS.RED);
     Screen('FillRect',w,rectcolor,rects);
     DoScoreboard();
     Screen('Flip',w);
