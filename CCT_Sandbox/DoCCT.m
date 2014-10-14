@@ -87,9 +87,13 @@ while telap < CCT.var.trial_dur;
                         Screen('Flip',w);
                     end
                 end
-            elseif clickedonbox == DIMS.grid_totes+1 && ~any(clicked); %No clicks please
+            elseif clickedonbox == DIMS.grid_totes+1 %&& ~any(clicked); %End trial button
                 %Biopac pulse
-                DrawFormattedText(w,'You have selected no clicks. Starting new trial.','center',DIMS.endtext_loc_y,COLORS.RED);
+                if ~any(clicked)
+                    DrawFormattedText(w,'You have selected no clicks. Starting new trial.','center',DIMS.endtext_loc_y,COLORS.RED);
+                else
+                    DrawFormattedText(w,'Moving to next trial!','center',DIMS.endtext_loc_y,COLORS.RED);
+                end
 %                 rectcolor = Reveal4Color(fail_list);
 %                 Screen('FillRect',w,rectcolor,rects);
                 DoScoreboard();
@@ -100,17 +104,17 @@ while telap < CCT.var.trial_dur;
                 WaitSecs(2); % NEEDS CHANGE: to any key.
                 
                 break
-            elseif clickedonbox == DIMS.grid_totes+2; %Just end it all!
-                %Biopac pulse
-                DrawFormattedText(w,'Moving to next trial!','center',DIMS.endtext_loc_y,COLORS.RED);
-%                 rectcolor = Reveal4Color(fail_list);
-%                 Screen('FillRect',w,rectcolor,rects);
-                DoScoreboard();
-                [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
-                Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
-                Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
-                Screen('Flip',w);
-                WaitSecs(2); % NEEDS CHANGE: to any key.
+%             elseif clickedonbox == DIMS.grid_totes+2; %Just end it all!
+%                 %Biopac pulse
+%                 DrawFormattedText(w,'Moving to next trial!','center',DIMS.endtext_loc_y,COLORS.RED);
+% %                 rectcolor = Reveal4Color(fail_list);
+% %                 Screen('FillRect',w,rectcolor,rects);
+%                 DoScoreboard();
+%                 [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+%                 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+%                 Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+%                 Screen('Flip',w);
+%                 WaitSecs(2); % NEEDS CHANGE: to any key.
                 
                 break
             end
