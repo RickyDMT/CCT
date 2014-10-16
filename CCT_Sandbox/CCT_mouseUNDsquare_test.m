@@ -52,8 +52,8 @@ CCT.data.cumscore = repmat(-999,STIM.trials,1);             %This is cumulative 
 
 % Pics for gain/loss
 try
-    gain_card = imread('card_gain.png');
-    loss_card = imread('card_loss.png');
+    gain_card = imread('happycard.jpg');
+    loss_card = imread('badcard.jpg');
 catch
     error('Cannot load images.');
     KbWait();
