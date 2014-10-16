@@ -13,7 +13,7 @@ trial_score = 0;
 clicked = zeros(DIMS.grid_totes,1);
 fail_list = randperm(DIMS.grid_totes,CCT.var.num_bad(trial)); 
 rectcolor = repmat(COLORS.start,1,(DIMS.grid_totes));
-rectcolor = [rectcolor COLORS.butt COLORS.butt];
+rectcolor = [rectcolor COLORS.butt];
 
 %[rectcolor,gameover] = Click4Color(clicked,fail_list);      %chooses color for cards; tests for good/bad flip
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
