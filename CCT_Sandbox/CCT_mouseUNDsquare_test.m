@@ -18,7 +18,7 @@ KEY.select = KbName('SPACE'); %To end random trial selection
 COLORS = struct;
 COLORS.BLACK = [0 0 0];
 COLORS.WHITE = [255 255 255];
-COLORS.RED = [255 0 0];
+COLORS.RED = [255 0 0]; 
 COLORS.BLUE = [0 0 255];
 COLORS.GREEN = [0 255 0];
 COLORS.YELLOW = [255 255 0];
@@ -66,7 +66,7 @@ commandwindow;
 
 %%
 %change this to 0 to fill whole screen
-DEBUG=1;
+DEBUG=0;
 
 %set up the screen and dimensions
 
