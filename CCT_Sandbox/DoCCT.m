@@ -18,6 +18,7 @@ rectcolor = [rectcolor COLORS.butt];
 %[rectcolor,gameover] = Click4Color(clicked,fail_list);      %chooses color for cards; tests for good/bad flip
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
 DoScoreboard();                                             %Displays scores, trial, bads, etc.
+%UPDATE NEEDED: This should check trial x block time duration
 telap = CountdownClock(tstart,CCT.var.trial_dur(trial));    %Runs & displays countdown clock
 Screen('Flip',w);
 
@@ -116,7 +117,7 @@ while telap < CCT.var.trial_dur;
 %                 Screen('Flip',w);
 %                 WaitSecs(2); % NEEDS CHANGE: to any key.
                 
-                break
+%                 break
             end
         end
       
@@ -143,6 +144,7 @@ if telap == CCT.var.trial_dur(trial);
     DoScoreboard();
     Screen('Flip',w);
     WaitSecs(2);
+    %UPDATE NEEDED: Reveal faces here.
 end
 
 score = trial_score;

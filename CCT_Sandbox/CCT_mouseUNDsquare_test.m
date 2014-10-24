@@ -43,11 +43,11 @@ CCT.var.Trial= (1:STIM.trials)';
 for g = 1:STIM.blocks;
     CCT.var.trial_dur(1:STIM.trials,g) = repmat(18,STIM.trials,1);              %Sets timer for each trial. If same time every time, remove from loop.
     CCT.var.num_bad(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[1 3]);      %Loss cards per trial
-    CCT.var.scorval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[10 100]);   %This is gain amount
-    CCT.var.lossval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[-10 -100]); %This determines loss amount
+    CCT.var.scorval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[10 30]);   %This is gain amount
+    CCT.var.lossval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[-250 -750]); %This determines loss amount
 end
-CCT.data.trialscore = repmat(-999,STIM.trials,1);
-CCT.data.cumscore = repmat(-999,STIM.trials,1);             %This is cumulative score (pervert).
+CCT.data.trialscore = repmat(-999,STIM.trials,STIM.blocks);
+CCT.data.cumscore = repmat(-999,STIM.trials,STIM.blocks);             %This is cumulative score (pervert).
 
 
 % Pics for gain/loss
@@ -84,7 +84,7 @@ if DEBUG==1;
     YCENTER=240;
 else
     %change screen resolution
-    Screen('Resolution',0,1024,768,[],32);
+    %Screen('Resolution',0,1024,768,[],32);
     
     %this gives the x and y dimensions of our screen, in pixels.
     [swidth, sheight] = Screen('WindowSize', screenNumber);
@@ -104,7 +104,7 @@ end
 %you can set the font sizes and styles here
 Screen('TextFont', w, 'Arial');
 %Screen('TextStyle', w, 1);
-Screen('TextSize',w,20);
+Screen('TextSize',w,30);
 
 KbName('UnifyKeyNames');
 
@@ -124,6 +124,9 @@ Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
 WaitSecs(2);
+
+%% Practice?
+
 
 %% Present multiple trials & blocks.
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
@@ -153,4 +156,3 @@ WaitSecs(2);
 
 sca
 
-    
