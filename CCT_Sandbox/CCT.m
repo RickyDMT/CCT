@@ -1,4 +1,6 @@
-global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT trial rects IMAGE
+global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT rects IMAGE
+%Add "Press space to start round."
+%Fix spacing in task.
 
 KEY = struct;
 KEY.select = KbName('SPACE'); %To end random trial selection
@@ -28,26 +30,56 @@ COLORS.bad = COLORS.RED';       %color of flipped bad card
 COLORS.butt = [192 192 192]';   %color of buttons
 
 DIMS = struct;
-DIMS.grid_row = 8; %These have to been even numbers...
-DIMS.grid_col = 4; %These have to been even numbers...
+DIMS.grid_row = 4; %These have to been even numbers...
+DIMS.grid_col = 8; %These have to been even numbers...
 DIMS.grid_totes = DIMS.grid_row*DIMS.grid_col;
+DIMS.trial_dur = 18;
 
 STIM = struct;
 STIM.blocks = 3;
 STIM.trials = 8;
+STIM.lossc = [1 3];
+STIM.lossamt = [-250 -750];
+STIM.gainamt = [10 30];
 
-CCT = struct;
+CCT.var = struct('Block',[],'Trial',[],'LossCards',[],'LossAmt',[],'GainAmt',[]);
+CCT.data = struct('Block',[],'Trial',[],'Outcome',[],'trialscore',[],'rt_firstclick',[],'boxes',[],'time_left',[]);
 % CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)];
 % %This might just be different columns of data represnting each block...?
-CCT.var.Trial= (1:STIM.trials)';
+
+% CCT.var.Trial= (1:STIM.trials)';
+
 for g = 1:STIM.blocks;
-    CCT.var.trial_dur(1:STIM.trials,g) = repmat(18,STIM.trials,1);              %Sets timer for each trial. If same time every time, remove from loop.
-    CCT.var.num_bad(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[1 3]);      %Loss cards per trial
-    CCT.var.scorval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[10 30]);   %This is gain amount
-    CCT.var.lossval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[-250 -750]); %This determines loss amount
+    [lossc, lossamt, gainamt] = BalanceTrials(STIM.trials,1,STIM.lossc,STIM.lossamt,STIM.gainamt);
+    
+    %Add data structure creation for interblock questionnaires here.
+    
+    for h = 1:STIM.trials;
+        varow = (g-1)*STIM.trials + h;
+        CCT.var(varow).Block = g;
+        CCT.var(varow).Trial = h;
+        CCT.var(varow).LossCards = lossc(h);
+        CCT.var(varow).LossAmt = lossamt(h);
+        CCT.var(varow).GainAmt = gainamt(h);
+        
+        CCT.data(varow).Block = g;
+        CCT.data(varow).Trial = h;
+        CCT.data(varow).Outcome = NaN;
+        CCT.data(varow).trialscore = NaN;
+        CCT.data(varow).rt_firstclick = NaN;
+        CCT.data(varow).boxes = NaN;
+        CCT.data(varow).time_left = NaN;
+    end
 end
-CCT.data.trialscore = repmat(-999,STIM.trials,STIM.blocks);
-CCT.data.cumscore = repmat(-999,STIM.trials,STIM.blocks);             %This is cumulative score (pervert).
+    
+%     CCT.var.trial_dur(1:STIM.trials,g) = repmat(18,STIM.trials,1);              %Sets timer for each trial. If same time every time, remove from loop.
+%     CCT.var.num_bad(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[1 3]);      %Loss cards per trial
+%     CCT.var.scorval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[10 30]);   %This is gain amount
+%     CCT.var.lossval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[-250 -750]); %This determines loss amount
+    
+
+% CCT.data.trialscore = repmat(-999,STIM.trials,STIM.blocks);
+% CCT.data.cumscore = repmat(-999,STIM.trials,STIM.blocks);             %This is cumulative score (pervert).
 
 
 % Pics for gain/loss
@@ -66,7 +98,7 @@ commandwindow;
 
 %%
 %change this to 0 to fill whole screen
-DEBUG=0;
+DEBUG=1;
 
 %set up the screen and dimensions
 
@@ -112,6 +144,9 @@ KbName('UnifyKeyNames');
 rects = DrawRectsGrid();
 DIMS.endtext_loc_y = min(rects(2,:))-20;
 
+Screen('FillRect',w,COLORS.WHITE,rects);
+Screen('Flip',w);
+
 %% Set up images; needs to wait for screen setup.
 
 IMAGE = struct;
@@ -132,8 +167,9 @@ WaitSecs(2);
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
     for trial = 1:STIM.trials;
         %BIOPAC PULSE FOR START
-        CCT.data.trialscore(trial,block) = DoCCT();
-        CCT.data.cumscore(trial,block) = sum(CCT.data.trialscore(1:trial,block));
+        trialrow = (block-1)*STIM.trials + trial;
+        
+        CCT.data(trialrow).trialscore = DoCCT(trialrow);
         
     end
 %     %This is where inter-block questions go.

@@ -4,11 +4,15 @@ function [  ] = DoScoreboard( varargin )
 %   Probably need to decide how to index locations...use XCENTER
 %   YCENTER? or wRect?
 
-global w rects CCT trial COLORS trial_score
+global w rects CCT trial COLORS trial_score wRect
 
 %Base all locations off of some variable to allow proper scaling to
 %different screens.
 tscore = trial_score;
+
+lossc_loc_x = rects(1);
+lossa_loc_x = rects(1,end);
+gainsco_loc_x = rects(1,7);     %Align with left side of 7th block on row 1.
 
 left_loc_x = 10;
 bads_loc_y = 40;
