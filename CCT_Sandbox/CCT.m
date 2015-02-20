@@ -16,7 +16,7 @@ KEY.select = KbName('SPACE'); %To end random trial selection
 % KEY.zero = KbName('0)');
 % KEY.yes = KbName('y');
 % KEY.no = KbName('n');
-
+%Hey there!
 COLORS = struct;
 COLORS.BLACK = [0 0 0];
 COLORS.WHITE = [255 255 255];
