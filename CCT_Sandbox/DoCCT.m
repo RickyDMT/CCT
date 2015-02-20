@@ -19,7 +19,7 @@ rectcolor = [rectcolor COLORS.butt];
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
 DoScoreboard(trialrow);                                             %Displays scores, trial, bads, etc.
 %UPDATE NEEDED: This should check trial x block time duration
-telap = CountdownClock(tstart,DIMS.trial_dur);    %Runs & displays countdown clock
+telap = CountdownClock(tstart,DIMS.trial_dur,rects);    %Runs & displays countdown clock
 Screen('Flip',w);
 
 %Display end of trial words stuff - now a constant in main page
@@ -82,7 +82,7 @@ while telap < DIMS.trial_dur;
                         Screen('FillRect',w,rectcolor,rects);
                         [imagerects] = DrawImageRects(clicked);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
-                        telap = CountdownClock(tstart,DIMS.trial_dur);
+                        telap = CountdownClock(tstart,DIMS.trial_dur,rects);
                         DoScoreboard(trialrow);
                         
                         Screen('Flip',w);
@@ -122,14 +122,14 @@ while telap < DIMS.trial_dur;
         end
       
     elseif any(clicked) %no button was pressed recently; just update clock, re-flip everything else
-    telap = CountdownClock(tstart,DIMS.trial_dur);
+    telap = CountdownClock(tstart,DIMS.trial_dur,rects);
     Screen('FillRect',w,rectcolor,rects);
     DoScoreboard(trialrow);
     Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
     Screen('Flip',w);
     
     else %no button ever pressed; updated & reflip everything
-    telap = CountdownClock(tstart,DIMS.trial_dur);
+    telap = CountdownClock(tstart,DIMS.trial_dur,rects);
     Screen('FillRect',w,rectcolor,rects);
     DoScoreboard(trialrow);
     Screen('Flip',w);

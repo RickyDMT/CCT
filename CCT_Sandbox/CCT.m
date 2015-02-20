@@ -144,8 +144,8 @@ KbName('UnifyKeyNames');
 rects = DrawRectsGrid();
 DIMS.endtext_loc_y = min(rects(2,:))-20;
 
-Screen('FillRect',w,COLORS.WHITE,rects);
-Screen('Flip',w);
+% Screen('FillRect',w,COLORS.WHITE,rects);
+% Screen('Flip',w);
 
 %% Set up images; needs to wait for screen setup.
 
