@@ -36,9 +36,9 @@ end
     
 % Just end it all!
     rects(1,length(rects)+1)= xcenter- (square_side + .5*gap);
-    rects(2,length(rects))= squart_y - ((square_side/2)+2*gap);
+    rects(2,length(rects))= squart_y - ((square_side)+2*gap);
     rects(3,length(rects))= xcenter + (square_side + .5*gap);
-    rects(4,length(rects))= squart_y - 2*gap;
+    rects(4,length(rects))= squart_y - fix((square_side/2)+2*gap);
 
 end
 

@@ -17,7 +17,7 @@ rectcolor = [rectcolor COLORS.butt];
 
 %[rectcolor,gameover] = Click4Color(clicked,fail_list);      %chooses color for cards; tests for good/bad flip
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
-DoScoreboard();                                             %Displays scores, trial, bads, etc.
+DoScoreboard(trialrow);                                             %Displays scores, trial, bads, etc.
 %UPDATE NEEDED: This should check trial x block time duration
 telap = CountdownClock(tstart,DIMS.trial_dur);    %Runs & displays countdown clock
 Screen('Flip',w);
@@ -54,7 +54,7 @@ while telap < DIMS.trial_dur;
                         DrawFormattedText(w,'You lose.','center',DIMS.endtext_loc_y,COLORS.RED);
                         %rectcolor = Reveal4Color(fail_list);
                         %Screen('FillRect',w,rectcolor,rects);
-                        DoScoreboard();
+                        DoScoreboard(trialrow);
                         [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                         Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
@@ -72,7 +72,7 @@ while telap < DIMS.trial_dur;
                         [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                         Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
-                        DoScoreboard();
+                        DoScoreboard(trialrow);
                         Screen('Flip',w);
                         WaitSecs(2); % NEEDS CHANGE: to any key.
                         
@@ -83,12 +83,12 @@ while telap < DIMS.trial_dur;
                         [imagerects] = DrawImageRects(clicked);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                         telap = CountdownClock(tstart,DIMS.trial_dur);
-                        DoScoreboard();
+                        DoScoreboard(trialrow);
                         
                         Screen('Flip',w);
                     end
                 end
-            elseif clickedonbox == DIMS.grid_totes+1 %&& ~any(clicked); %End trial button
+            elseif clickedonbox == DIMS.grid_totes+1 %End trial button
                 %Biopac pulse
                 if ~any(clicked)
                     DrawFormattedText(w,'You have selected no clicks. Starting new trial.','center',DIMS.endtext_loc_y,COLORS.RED);
@@ -97,7 +97,7 @@ while telap < DIMS.trial_dur;
                 end
 %                 rectcolor = Reveal4Color(fail_list);
 %                 Screen('FillRect',w,rectcolor,rects);
-                DoScoreboard();
+                DoScoreboard(trialrow);
                 [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
                 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                 Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
@@ -124,14 +124,14 @@ while telap < DIMS.trial_dur;
     elseif any(clicked) %no button was pressed recently; just update clock, re-flip everything else
     telap = CountdownClock(tstart,DIMS.trial_dur);
     Screen('FillRect',w,rectcolor,rects);
-    DoScoreboard();
+    DoScoreboard(trialrow);
     Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
     Screen('Flip',w);
     
     else %no button ever pressed; updated & reflip everything
     telap = CountdownClock(tstart,DIMS.trial_dur);
     Screen('FillRect',w,rectcolor,rects);
-    DoScoreboard();
+    DoScoreboard(trialrow);
     Screen('Flip',w);
     end
     
@@ -141,7 +141,7 @@ if telap == DIMS.trial_dur;
     
     DrawFormattedText(w,'Time is up.','center',DIMS.endtext_loc_y,COLORS.RED);
     Screen('FillRect',w,rectcolor,rects);
-    DoScoreboard();
+    DoScoreboard(trialrow);
     Screen('Flip',w);
     WaitSecs(2);
     %UPDATE NEEDED: Reveal faces here.
