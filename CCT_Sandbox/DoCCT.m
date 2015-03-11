@@ -1,11 +1,10 @@
-function [ score ] = DoCCT(trialrow)
+function [ score, outcome, boxes, time_left,rt_first ] = DoCCT(trialrow)
 %CCT Runs Columbia card task, trial-by-trial
 %   Coded by: ELK
 
 global w DIMS CCT COLORS trial_score rects IMAGE fail_list
 
-%Timer stuff
-tstart = tic;
+
 
 %Score stuff
 trial_score = 0;
@@ -18,7 +17,9 @@ rectcolor = [rectcolor COLORS.butt];
 %[rectcolor,gameover] = Click4Color(clicked,fail_list);      %chooses color for cards; tests for good/bad flip
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
 DoScoreboard(trialrow);                                             %Displays scores, trial, bads, etc.
-%UPDATE NEEDED: This should check trial x block time duration
+
+%Timer stuff
+tstart = tic;
 telap = CountdownClock(tstart,DIMS.trial_dur,rects);    %Runs & displays countdown clock
 Screen('Flip',w);
 
@@ -30,6 +31,7 @@ while telap < DIMS.trial_dur;
 
     [x,y,button] = GetMouse();
     if button(1);
+        clicktime = toc(tstart);
         %test if mouse clicked in one of our precious boxes.
         %This creates arrays of 1s or 0s for > or < min/max dimensions
         xmin = rects(1,:)<=x;
@@ -48,10 +50,13 @@ while telap < DIMS.trial_dur;
                     clicked(clickedonbox) = 1;
 
                     if ~isempty(fail_list(fail_list == clickedonbox)) %if you clicked on loss
-                    %if gameover == 1; %If you have clicked a bad.
                         %BIOPAC PULSE
+%                         outp(4);
+%                         WaitSecs(.05);
                         trial_score = trial_score + CCT.var(trialrow).LossAmt;
-                        DrawFormattedText(w,'You lose.','center',DIMS.endtext_loc_y,COLORS.RED);
+                        
+                        %XXX UPDATE YOU LOSE LOCATION.
+                        DrawFormattedText(w,'You lose.','center','center',COLORS.RED);
                         %rectcolor = Reveal4Color(fail_list);
                         %Screen('FillRect',w,rectcolor,rects);
                         DoScoreboard(trialrow);
@@ -59,12 +64,18 @@ while telap < DIMS.trial_dur;
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                         Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
                         Screen('Flip',w);
-                        WaitSecs(2); % NEEDS CHANGE: to any key.
+                        outcome = 0;
+                        time_left = DIMS.trial_dur - (clicktime);
+                        if length(find(clicked)) == 1;
+                            rt_first = clicktime;
+                        end
+                        WaitSecs(2); % XXX Have subj click on button to continue.
                         
                         break
                     elseif length(clicked(clicked==1)) == (DIMS.grid_totes - CCT.var(trialrow).LossCards);
-                    %elseif gameover ==2; %If you have run out of greens to click.
                         %BIOPAC PULSE
+%                         outp(8);
+%                         WaitSecs(.05);
                         trial_score = trial_score + CCT.var(trialrow).GainAmt;
                         DrawFormattedText(w,'You win.','center',DIMS.endtext_loc_y,COLORS.RED);
 %                         rectcolor = Reveal4Color(fail_list);
@@ -74,24 +85,37 @@ while telap < DIMS.trial_dur;
                         Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
                         DoScoreboard(trialrow);
                         Screen('Flip',w);
-                        WaitSecs(2); % NEEDS CHANGE: to any key.
+                        outcome = 1;
+                        time_left = DIMS.trial_dur - (clicktime);
+                        WaitSecs(2); % XXX Have subj click on button to continue.
                         
                         break
                     else
-                        trial_score = trial_score + CCT.var(trialrow).GainAmt);
+                        %BioPacPulse
+%                         outp(2);
+%                         WaitSecs(.05);
+                        trial_score = trial_score + CCT.var(trialrow).GainAmt;
                         Screen('FillRect',w,rectcolor,rects);
                         [imagerects] = DrawImageRects(clicked);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                         telap = CountdownClock(tstart,DIMS.trial_dur,rects);
                         DoScoreboard(trialrow);
-                        
                         Screen('Flip',w);
+                        
+                        if length(find(clicked)) == 1;
+                            rt_first = clicktime;
+                        end
+                        
                     end
                 end
             elseif clickedonbox == DIMS.grid_totes+1 %End trial button
                 %Biopac pulse
+%                 outp(16);
+%                 WaitSecs(.05);
+                
                 if ~any(clicked)
-                    DrawFormattedText(w,'You have selected no clicks. Starting new trial.','center',DIMS.endtext_loc_y,COLORS.RED);
+                    DrawFormattedText(w,'You have selected no cards. Starting new trial.','center',DIMS.endtext_loc_y,COLORS.RED);
+                    rt_first = NaN;
                 else
                     DrawFormattedText(w,'Moving to next trial!','center',DIMS.endtext_loc_y,COLORS.RED);
                 end
@@ -102,22 +126,11 @@ while telap < DIMS.trial_dur;
                 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                 Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
                 Screen('Flip',w);
-                WaitSecs(2); % NEEDS CHANGE: to any key.
+                outcome = 2;
+                time_left = DIMS.trial_dur - (clicktime);
+                WaitSecs(2); % XXX Have subj click on button to continue.
                 
                 break
-%             elseif clickedonbox == DIMS.grid_totes+2; %Just end it all!
-%                 %Biopac pulse
-%                 DrawFormattedText(w,'Moving to next trial!','center',DIMS.endtext_loc_y,COLORS.RED);
-% %                 rectcolor = Reveal4Color(fail_list);
-% %                 Screen('FillRect',w,rectcolor,rects);
-%                 DoScoreboard();
-%                 [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
-%                 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
-%                 Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
-%                 Screen('Flip',w);
-%                 WaitSecs(2); % NEEDS CHANGE: to any key.
-                
-%                 break
             end
         end
       
@@ -135,6 +148,7 @@ while telap < DIMS.trial_dur;
     Screen('Flip',w);
     end
     
+%     FlushEvents();
 end
 
 if telap == DIMS.trial_dur;
@@ -142,12 +156,21 @@ if telap == DIMS.trial_dur;
     DrawFormattedText(w,'Time is up.','center',DIMS.endtext_loc_y,COLORS.RED);
     Screen('FillRect',w,rectcolor,rects);
     DoScoreboard(trialrow);
+    [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+    Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+    Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
     Screen('Flip',w);
-    WaitSecs(2);
-    %UPDATE NEEDED: Reveal faces here.
+    outcome = 3;
+    time_left = 0;
+    
+    if ~any(clicked);
+        rt_first = NaN;
+    end
+    WaitSecs(2); % XXX Have subj click on button to continue.
 end
 
 score = trial_score;
-clear clickedonbox change failtest
+boxes = length(find(clicked));
+clear clickedonbox
 end
 

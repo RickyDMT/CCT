@@ -3,7 +3,7 @@ global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT rects IMAGE
 %Fix spacing in task.
 
 KEY = struct;
-KEY.select = KbName('SPACE'); %To end random trial selection
+KEY.select = KbName('SPACE'); %To end random trial selection 
 % KEY.one = KbName('1!');
 % KEY.two = KbName('2@');
 % KEY.tres = KbName('3#');
@@ -167,9 +167,12 @@ WaitSecs(2);
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
     for trial = 1:STIM.trials;
         %BIOPAC PULSE FOR START
+%         outp(1);
+%         WaitSecs(.05);
+
         trialrow = (block-1)*STIM.trials + trial;
         
-        CCT.data(trialrow).trialscore = DoCCT(trialrow);
+        [CCT.data(trialrow).trialscore, CCT.data(trialrow).Outcome, CCT.data(trialrow).boxes, CCT.data(trialrow).time_left, CCT.data(trialrow).rt_firstclick] = DoCCT(trialrow);
         
     end
 %     %This is where inter-block questions go.

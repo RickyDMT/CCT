@@ -1,5 +1,8 @@
 function [ varargout ] = DrawImageRects( clicked, varargin )
-%DoDrawCardImage(clicked)  Draw gain/loss images on cards.
+%Gives location for gain/loss images on cards.
+%If calling function for apocolyptic "end of trial" big reveal, then call
+%with "1" as a second input in addition to "clicked" (the cards that have
+%been clicked
 
 global rects fail_list
 

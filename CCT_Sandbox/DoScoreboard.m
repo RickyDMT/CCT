@@ -66,7 +66,7 @@ DrawFormattedText(w,'STOP!','center',rects(2,end)+2,COLORS.BLACK);
 
 Screen('TextSize',w,oldsize);
 
-Screen('Flip',w);
+% Screen('Flip',w);
 
 end
 
