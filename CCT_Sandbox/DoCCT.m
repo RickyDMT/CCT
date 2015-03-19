@@ -178,10 +178,10 @@ while telap < DIMS.trial_dur;
 %                 WaitSecs(.05);
                 
                 if ~any(clicked)
-                    DrawFormattedText(w,'You have selected no cards. Starting new trial.','center',DIMS.endtext_loc_y,COLORS.RED);
+                    DrawFormattedText(w,'You have selected no cards. Starting new trial.','center',rects(2,end)+45,COLORS.RED);
                     rt_first = NaN;
                 else
-                    DrawFormattedText(w,'Moving to next trial!','center',DIMS.endtext_loc_y,COLORS.RED);
+                    DrawFormattedText(w,'Moving to next trial!','center',rects(2,end)+45,COLORS.RED);
                 end
 %                 rectcolor = Reveal4Color(fail_list);
 %                 Screen('FillRect',w,rectcolor,rects);
@@ -218,7 +218,7 @@ end
 
 if telap >= DIMS.trial_dur;
     
-    DrawFormattedText(w,'Time is up.','center',DIMS.endtext_loc_y,COLORS.RED);
+    DrawFormattedText(w,'Time is up.','center',rects(2,end)+45,COLORS.RED);
     Screen('FillRect',w,rectcolor,rects);
     DoScoreboard(trialrow);
     [imagerects, imagerects_fail] = DrawImageRects(clicked,1);

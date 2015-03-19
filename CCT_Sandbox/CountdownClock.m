@@ -16,9 +16,9 @@ end
 tdisp = sprintf('%02.1f',tleft);
 
 if tleft >8
-    DrawFormattedText(w,tdisp,'center',20,COLORS.GREEN);
+    DrawFormattedText(w,tdisp,'center',rects(2,end)+45,COLORS.GREEN);
 else
-    DrawFormattedText(w,tdisp,'center',20,COLORS.RED);
+    DrawFormattedText(w,tdisp,'center',rects(2,end)+45,COLORS.RED);
 end
 
 
