@@ -1,4 +1,4 @@
-function CCT()
+function CCT_go()
 
 global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT rects IMAGE
 %Add "Press space to start round."

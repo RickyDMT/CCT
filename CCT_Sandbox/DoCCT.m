@@ -28,8 +28,62 @@ Screen('Flip',w);
 
 %next_trial = 0; %using break instead of while w/next_trial
 while telap < DIMS.trial_dur;
+    button = 0;
+    
+    [~,~,buttons] = GetMouse();
+    while any(buttons) && telap < DIMS.trial_dur % if already down, wait for release
+        [~,~,buttons] = GetMouse();
+        if any(clicked)
+            telap = CountdownClock(tstart,DIMS.trial_dur,rects);
+            Screen('FillRect',w,rectcolor,rects);
+            DoScoreboard(trialrow);
+            Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+            Screen('Flip',w);
+            
+        else %no button ever pressed; updated & reflip everything
+            telap = CountdownClock(tstart,DIMS.trial_dur,rects);
+            Screen('FillRect',w,rectcolor,rects);
+            DoScoreboard(trialrow);
+            Screen('Flip',w);
+        end
 
-    [x,y,button] = GetMouse();
+    end
+    
+    while ~any(buttons) && telap < DIMS.trial_dur % wait for press
+        [~,~,buttons] = GetMouse();
+        if any(clicked)
+            telap = CountdownClock(tstart,DIMS.trial_dur,rects);
+            Screen('FillRect',w,rectcolor,rects);
+            DoScoreboard(trialrow);
+            Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+            Screen('Flip',w);
+            
+        else %no button ever pressed; updated & reflip everything
+            telap = CountdownClock(tstart,DIMS.trial_dur,rects);
+            Screen('FillRect',w,rectcolor,rects);
+            DoScoreboard(trialrow);
+            Screen('Flip',w);
+        end
+    end
+    
+    while any(buttons) && telap < DIMS.trial_dur % wait for release
+        button = 1;
+        [x,y,buttons] = GetMouse();
+        if any(clicked)
+            telap = CountdownClock(tstart,DIMS.trial_dur,rects);
+            Screen('FillRect',w,rectcolor,rects);
+            DoScoreboard(trialrow);
+            Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+            Screen('Flip',w);
+            
+        else %no button ever pressed; updated & reflip everything
+            telap = CountdownClock(tstart,DIMS.trial_dur,rects);
+            Screen('FillRect',w,rectcolor,rects);
+            DoScoreboard(trialrow);
+            Screen('Flip',w);
+        end
+    end
+    
     if button(1);
         clicktime = toc(tstart);
         %test if mouse clicked in one of our precious boxes.
@@ -56,7 +110,7 @@ while telap < DIMS.trial_dur;
                         trial_score = trial_score + CCT.var(trialrow).LossAmt;
                         
                         %XXX UPDATE YOU LOSE LOCATION.
-                        DrawFormattedText(w,'You lose.','center','center',COLORS.RED);
+                        DrawFormattedText(w,'You lose.','center',rects(2,end)+45,COLORS.RED);
                         %rectcolor = Reveal4Color(fail_list);
                         %Screen('FillRect',w,rectcolor,rects);
                         DoScoreboard(trialrow);
@@ -77,7 +131,7 @@ while telap < DIMS.trial_dur;
 %                         outp(8);
 %                         WaitSecs(.05);
                         trial_score = trial_score + CCT.var(trialrow).GainAmt;
-                        DrawFormattedText(w,'You win.','center',DIMS.endtext_loc_y,COLORS.RED);
+                        DrawFormattedText(w,'You win.','center',rects(2,end)+45,COLORS.RED);
 %                         rectcolor = Reveal4Color(fail_list);
 %                         Screen('FillRect',w,rectcolor,rects);
                         [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
@@ -133,8 +187,9 @@ while telap < DIMS.trial_dur;
                 break
             end
         end
+    end
       
-    elseif any(clicked) %no button was pressed recently; just update clock, re-flip everything else
+    if any(clicked) %no button was pressed recently; just update clock, re-flip everything else
     telap = CountdownClock(tstart,DIMS.trial_dur,rects);
     Screen('FillRect',w,rectcolor,rects);
     DoScoreboard(trialrow);
@@ -151,7 +206,7 @@ while telap < DIMS.trial_dur;
 %     FlushEvents();
 end
 
-if telap == DIMS.trial_dur;
+if telap >= DIMS.trial_dur;
     
     DrawFormattedText(w,'Time is up.','center',DIMS.endtext_loc_y,COLORS.RED);
     Screen('FillRect',w,rectcolor,rects);

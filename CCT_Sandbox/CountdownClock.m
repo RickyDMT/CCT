@@ -5,8 +5,16 @@ function [ telap ] = CountdownClock( tstart,ttotes, rects, varargin )
 global w COLORS
 
 telap = round(toc(tstart)*10)/10;
-tleft = ttotes - telap;
+
+if telap >= ttotes
+    telap = ttotes;
+    tleft = 0;
+else
+    tleft = ttotes - telap;
+end
+
 tdisp = sprintf('%02.1f',tleft); 
+
 DrawFormattedText(w,tdisp,'center',rects(2,end)+45,COLORS.RED);
 
 
