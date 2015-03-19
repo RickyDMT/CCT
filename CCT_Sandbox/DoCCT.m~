@@ -16,7 +16,8 @@ else
     GainAmt= CCT.var(trialrow).GainAmt;
     LossCards = CCT.var(trialrow).LossCards;
     LossAmt = CCT.var(trialrow).LossAmt;
-end    
+end
+    
 clicked = zeros(DIMS.grid_totes,1);
 fail_list = randperm(DIMS.grid_totes,LossCards); 
 rectcolor = repmat(COLORS.start,1,(DIMS.grid_totes));
@@ -61,7 +62,7 @@ while telap < DIMS.trial_dur;
                         %BIOPAC PULSE
 %                         outp(4);
 %                         WaitSecs(.05);
-                        trial_score = trial_score + LossAmt;
+                        trial_score = trial_score + CCT.var(trialrow).LossAmt;
                         
                         %XXX UPDATE YOU LOSE LOCATION.
                         DrawFormattedText(w,'You lose.','center','center',COLORS.RED);

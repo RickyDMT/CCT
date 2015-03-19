@@ -10,7 +10,7 @@ tdisp = sprintf('%02.1f',tleft); %NEED CHANGE: Add decimals!
 if tleft >8
     DrawFormattedText(w,tdisp,'center',20,COLORS.GREEN);
 else
-    DrawFormattedText(w,tdisp,'center',20,COLORS.GREEN);
+    DrawFormattedText(w,tdisp,'center',20,COLORS.RED);
 end
 
 end
