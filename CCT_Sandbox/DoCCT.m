@@ -8,9 +8,17 @@ global w DIMS CCT COLORS trial_score rects IMAGE fail_list
 
 %Score stuff
 trial_score = 0;
-
+if trialrow==0;
+   GainAmt = STIM.gainamt(randi(2,1));
+   LossCards = STIM.lossc(randi(2,1));
+   LossAmt = STIM.lossamt(randi(2,1));
+else
+    GainAmt= CCT.var(trialrow).GainAmt;
+    LossCards = CCT.var(trialrow).LossCards;
+    LossAmt = CCT.var(trialrow).LossAmt;
+end    
 clicked = zeros(DIMS.grid_totes,1);
-fail_list = randperm(DIMS.grid_totes,CCT.var(trialrow).LossCards); 
+fail_list = randperm(DIMS.grid_totes,LossCards); 
 rectcolor = repmat(COLORS.start,1,(DIMS.grid_totes));
 rectcolor = [rectcolor COLORS.butt];
 
@@ -107,7 +115,7 @@ while telap < DIMS.trial_dur;
                         %BIOPAC PULSE
 %                         outp(4);
 %                         WaitSecs(.05);
-                        trial_score = trial_score + CCT.var(trialrow).LossAmt;
+                        trial_score = trial_score + LossAmt;
                         
                         %XXX UPDATE YOU LOSE LOCATION.
                         DrawFormattedText(w,'You lose.','center',rects(2,end)+45,COLORS.RED);
@@ -126,12 +134,14 @@ while telap < DIMS.trial_dur;
                         WaitSecs(2); % XXX Have subj click on button to continue.
                         
                         break
-                    elseif length(clicked(clicked==1)) == (DIMS.grid_totes - CCT.var(trialrow).LossCards);
+                    elseif length(clicked(clicked==1)) == (DIMS.grid_totes - LossCards);
                         %BIOPAC PULSE
 %                         outp(8);
 %                         WaitSecs(.05);
-                        trial_score = trial_score + CCT.var(trialrow).GainAmt;
+
+                        trial_score = trial_score + GainAmt;
                         DrawFormattedText(w,'You win.','center',rects(2,end)+45,COLORS.RED);
+
 %                         rectcolor = Reveal4Color(fail_list);
 %                         Screen('FillRect',w,rectcolor,rects);
                         [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
@@ -148,7 +158,7 @@ while telap < DIMS.trial_dur;
                         %BioPacPulse
 %                         outp(2);
 %                         WaitSecs(.05);
-                        trial_score = trial_score + CCT.var(trialrow).GainAmt;
+                        trial_score = trial_score + GainAmt;
                         Screen('FillRect',w,rectcolor,rects);
                         [imagerects] = DrawImageRects(clicked);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);

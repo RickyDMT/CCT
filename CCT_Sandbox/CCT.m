@@ -51,6 +51,8 @@ CCT.data = struct('Block',[],'Trial',[],'Outcome',[],'trialscore',[],'rt_firstcl
 
 % CCT.var.Trial= (1:STIM.trials)';
 
+%Prac trials
+    
 for g = 1:STIM.blocks;
     [lossc, lossamt, gainamt] = BalanceTrials(STIM.trials,1,STIM.lossc,STIM.lossamt,STIM.gainamt);
     
