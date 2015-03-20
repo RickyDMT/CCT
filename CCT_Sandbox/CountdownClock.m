@@ -1,4 +1,4 @@
-function [ telap ] = CountdownClock( tstart,ttotes,varargin )
+function [ telap ] = CountdownClock( tstart,ttotes,rects,varargin )
 %CountdownClock Puts a fucking clock on the screen.
 %   Detailed explanation goes up yer ass.
 

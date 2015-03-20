@@ -35,7 +35,7 @@ DIMS = struct;
 DIMS.grid_row = 4; %These have to been even numbers...
 DIMS.grid_col = 8; %These have to been even numbers...
 DIMS.grid_totes = DIMS.grid_row*DIMS.grid_col;
-DIMS.trial_dur = 18;
+DIMS.trial_dur = 1800;
 
 STIM = struct;
 STIM.blocks = 3;
@@ -90,7 +90,6 @@ try
     loss_card = imread('badcard.jpg');
 catch
     error('Cannot load images.');
-    KbWait();
     sca;
 end
 
@@ -178,6 +177,9 @@ WaitSecs(2);
         
     end
 %     %This is where inter-block questions go.
+
+    
+
     if block < STIM.blocks
         endoblock = sprintf('Prepare for Block %d.',block+1);
         DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE);

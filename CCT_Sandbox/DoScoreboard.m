@@ -4,7 +4,7 @@ function [  ] = DoScoreboard(trialrow, varargin )
 %   Probably need to decide how to index locations...use XCENTER
 %   YCENTER? or wRect?
 
-global w rects CCT trial COLORS trial_score wRect
+global w rects CCT COLORS trial_score wRect
 
 %Base all locations off of some variable to allow proper scaling to
 %different screens.
@@ -60,9 +60,13 @@ DrawFormattedText(w,trial_text,lossa_loc_x,toprow_y,COLORS.WHITE);
 
 
 %Button text
-% oldsize = Screen('TextSize',w,20);
-DrawFormattedText(w,'STOP!','center',rects(2,end)+2,COLORS.BLACK);
-% CenterTextOnPoint(w,'STOP/Turn Over',stop_x,stop_y,COLORS.BLACK);
+
+if nargin == 2;
+    DrawFormattedText(w,'Next Trial','center',rects(2,end)+2,COLORS.BLACK);
+else
+    DrawFormattedText(w,'STOP!','center',rects(2,end)+2,COLORS.BLACK);
+end
+
 
 Screen('TextSize',w,oldsize);
 
