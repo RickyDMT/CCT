@@ -144,6 +144,9 @@ IMAGE.gain = Screen('MakeTexture',w,gain_card);
 IMAGE.loss = Screen('MakeTexture',w,loss_card);
 
 %%
+%Instructions
+
+
 DrawFormattedText(w,'The CCT is ready to begin.\nPress any key to continue.','center','center',COLORS.WHITE);
 Screen('Flip',w);
 KbWait;
@@ -166,7 +169,8 @@ WaitSecs(2);
         
     end
 %     %This is where inter-block questions go.
-
+    %Question Text here.
+%     [press, ~, keycode] = KbCheck();
     
 
     if block < STIM.blocks
