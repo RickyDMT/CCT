@@ -6,18 +6,7 @@ global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT rects IMAGE
 
 KEY = struct;
 KEY.select = KbName('SPACE'); %To end random trial selection 
-% KEY.one = KbName('1!');
-% KEY.two = KbName('2@');
-% KEY.tres = KbName('3#');
-% KEY.four = KbName('4$');
-% KEY.five = KbName('5%');
-% KEY.six = KbName('6^');
-% KEY.sev = KbName('7&');
-% KEY.eight = KbName('8*');
-% KEY.nine = KbName('9(');
-% KEY.zero = KbName('0)');
-% KEY.yes = KbName('y');
-% KEY.no = KbName('n');
+
 %Hey there!
 COLORS = struct;
 COLORS.BLACK = [0 0 0];
@@ -189,8 +178,81 @@ WaitSecs(2);
  end
 
 %% Randomized payout.
+%Where should random numbers be displayed? What size?
+numsq_side = 75;
+numsq_y1 = repmat(fix(wRect(4)/3),1,3);
+numsq_y2 = numsq_y1 + numsq_side;
+numsq_texty = numsq_y1 + numsq_side/2;
+numsq_textx = [fix(wRect(3)/4) fix(wRect(3)/2) fix(wRect(3)*(3/4))];
+numsq_x1 = numsq_textx - (numsq_side/2);
+numsq_x2 = numsq_x1 + numsq_side;
 
+squares4nums = [numsq_x1; numsq_y1; numsq_x2; numsq_y2];
+trials_selected = NaN(3,1);
 
+for rnd_trial = 1:3;
+    while 1
+        selected = randperm(STIM.trials,3);
+        if rnd_trial == 1;
+            s1 = sprintf('%d',selected(1));
+            s2 = sprintf('%d',selected(2));
+            s3 = sprintf('%d',selected(3));
+        elseif rnd_trial == 2;
+            s1 = sprintf('%d',trials_selected(1));
+            s2 = sprintf('%d',selected(2));
+            s3 = sprintf('%d',selected(3));
+        elseif rnd_trial == 3;
+            s1 = sprintf('%d',trials_selected(1));
+            s2 = sprintf('%d',trials_selected(2));
+            s3 = sprintf('%d',selected(3));
+        end
+        
+        Screen('FillRect',w,COLORS.WHITE,squares4nums);
+        Screen('TextSize',w,60);
+        CenterTextOnPoint(w,s1,numsq_textx(1),numsq_texty(1),COLORS.RED);
+        CenterTextOnPoint(w,s2,numsq_textx(2),numsq_texty(2),COLORS.RED);
+        CenterTextOnPoint(w,s3,numsq_textx(3),numsq_texty(3),COLORS.RED);
+        Screen('TextSize',w,20);
+        DrawFormattedText(w,'Press the space bar\n to choose trials to payout!','center',wRect(4)/8,COLORS.WHITE);
+
+        Screen('Flip',w);
+
+        [Down, ~, Code] = KbCheck();
+            if Down == 1 && find(Code) == KEY.select;
+                trials_selected(rnd_trial) = selected(rnd_trial);
+
+                break;
+            end
+    end
+end
+
+Screen('FillRect',w,COLORS.WHITE,squares4nums);
+oldtextsize = Screen('TextSize',w,60);
+CenterTextOnPoint(w,s1,numsq_textx(1),numsq_texty(1),COLORS.BLACK);
+CenterTextOnPoint(w,s2,numsq_textx(2),numsq_texty(2),COLORS.BLACK);
+CenterTextOnPoint(w,s3,numsq_textx(3),numsq_texty(3),COLORS.BLACK);
+Screen('TextSize',w,oldtextsize);
+DrawFormattedText(w,'You have selected the following trials.\nPlease wait while payout is calculated.','center',wRect(4)/8,COLORS.WHITE);
+Screen('Flip',w);
+WaitSecs(5);
+
+pay_trial(1) = CCT.data(trials_selected(1)).trialscore;
+pay_trial(2) = CCT.data(STIM.trials+trials_selected(2)).trialscore;
+pay_trial(3) = CCT.data(STIM.trials*2 + trials_selected(3)).trialscore;
+
+if any(pay_trial < 0)
+    pay_trial(pay_trial<0) = 0;
+end
+%ADD MULTIPLIER OR WHATEVER TO DETERMINE HOW MUCH TO PAY PEOPLE.
+total_pay = sum(pay_trial);
+
+CenterTextOnPoint(w,num2str(pay_trial(1)),numsq_textx(1),numsq_texty(1),COLORS.BLACK);
+CenterTextOnPoint(w,num2str(pay_trial(2)),numsq_textx(2),numsq_texty(2),COLORS.BLACK);
+CenterTextOnPoint(w,num2str(pay_trial(3)),numsq_textx(3),numsq_texty(3),COLORS.BLACK);
+Screen('TextSize',w,oldtextsize);
+DrawFormattedText(w,'You have earned the following amount, based on the random trials selected.\nPress any key to continue.','center',wRect(4)/8,COLORS.WHITE);
+Screen('Flip',w);
+KbWait();
 
 %% End of task.
 DrawFormattedText(w,'That concludes this stolen version \n of the Columbia Card Task.','center','center',COLORS.WHITE);
