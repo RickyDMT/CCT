@@ -27,7 +27,7 @@ DIMS = struct;
 DIMS.grid_row = 4; %These have to been even numbers...
 DIMS.grid_col = 8; %These have to been even numbers...
 DIMS.grid_totes = DIMS.grid_row*DIMS.grid_col;
-DIMS.trial_dur = 1800;
+DIMS.trial_dur = 18;
 
 STIM = struct;
 STIM.blocks = 3;
@@ -89,7 +89,7 @@ end
 
 %%
 %change this to 0 to fill whole screen
-DEBUG=1;
+DEBUG=0;
 
 %set up the screen and dimensions
 
@@ -281,9 +281,9 @@ end
 [mdir,~,~] = fileparts(which('CCT_go.m'));
 savedir = [mdir filesep 'Results'];
 savename = sprintf('CCT_%03.0f.mat',ID);
-cd(savedir);
+% cd(savedir);
 
-if exist(savename,'file')==2;
+if exist([savedir filesep savename],'file')==2;
     savename = sprintf('CCT_%03.0f_%s_%2.0f%02.0f.mat',ID,date,d(4),d(5));
 end
 

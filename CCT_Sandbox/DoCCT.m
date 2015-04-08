@@ -18,7 +18,7 @@ else
     LossAmt = CCT.var(trialrow).LossAmt;
 end    
 clicked = zeros(DIMS.grid_totes,1);
-fail_list = randperm(3,LossCards); %DIMS.grid_totes,LossCards); 
+fail_list = randperm(DIMS.grid_totes,LossCards); 
 rectcolor = repmat(COLORS.start,1,(DIMS.grid_totes));
 rectcolor = [rectcolor COLORS.butt];
 
