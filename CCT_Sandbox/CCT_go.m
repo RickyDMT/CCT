@@ -3,6 +3,9 @@ function CCT_go()
 global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT rects IMAGE
 %Add "Press space to start round."
 %Fix spacing in task.
+commandwindow;
+ID = input('Subject ID:');
+d = clock;
 
 KEY = struct;
 KEY.select = KbName('SPACE'); %To end random trial selection 
@@ -35,6 +38,8 @@ STIM.gainamt = [10 30];
 
 CCT.var = struct('Block',[],'Trial',[],'LossCards',[],'LossAmt',[],'GainAmt',[]);
 CCT.data = struct('Block',[],'Trial',[],'Outcome',[],'trialscore',[],'rt_firstclick',[],'boxes',[],'time_left',[]);
+CCT.info = struct('SubjID',ID,'Date',date,'Time',sprintf('%2.0f%02.0f',d(4),d(5)));
+
 % CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)];
 % %This might just be different columns of data represnting each block...?
 
@@ -79,11 +84,7 @@ try
     loss_card = imread('badcard.jpg');
 catch
     error('Cannot load images.');
-    sca;
 end
-
-
-commandwindow;
 
 
 %%
@@ -195,6 +196,7 @@ squares4nums = [numsq_x1; numsq_y1; numsq_x2; numsq_y2];
 trials_selected = NaN(3,1);
 
 for rnd_trial = 1:3;
+    FlushEvents();
     while 1
         selected = randperm(STIM.trials,3);
         if rnd_trial == 1;
@@ -216,14 +218,15 @@ for rnd_trial = 1:3;
         CenterTextOnPoint(w,s1,numsq_textx(1),numsq_texty(1),COLORS.RED);
         CenterTextOnPoint(w,s2,numsq_textx(2),numsq_texty(2),COLORS.RED);
         CenterTextOnPoint(w,s3,numsq_textx(3),numsq_texty(3),COLORS.RED);
-        Screen('TextSize',w,20);
-        DrawFormattedText(w,'Press the space bar\n to choose trials to payout!','center',wRect(4)/8,COLORS.WHITE);
+        Screen('TextSize',w,30);
+        DrawFormattedText(w,'Press the space bar to choose\na trial from each block to payout!','center',wRect(4)/8,COLORS.WHITE);
 
         Screen('Flip',w);
 
         [Down, ~, Code] = KbCheck();
-            if Down == 1 && find(Code) == KEY.select;
+            if Down == 1 && any(find(Code) == KEY.select);
                 trials_selected(rnd_trial) = selected(rnd_trial);
+                WaitSecs(.01);
 
                 break;
             end
@@ -232,36 +235,75 @@ end
 
 Screen('FillRect',w,COLORS.WHITE,squares4nums);
 oldtextsize = Screen('TextSize',w,60);
-CenterTextOnPoint(w,s1,numsq_textx(1),numsq_texty(1),COLORS.BLACK);
-CenterTextOnPoint(w,s2,numsq_textx(2),numsq_texty(2),COLORS.BLACK);
-CenterTextOnPoint(w,s3,numsq_textx(3),numsq_texty(3),COLORS.BLACK);
+CenterTextOnPoint(w,s1,numsq_textx(1),numsq_texty(1),COLORS.RED);
+CenterTextOnPoint(w,s2,numsq_textx(2),numsq_texty(2),COLORS.RED);
+CenterTextOnPoint(w,s3,numsq_textx(3),numsq_texty(3),COLORS.RED);
 Screen('TextSize',w,oldtextsize);
-DrawFormattedText(w,'You have selected the following trials.\nPlease wait while payout is calculated.','center',wRect(4)/8,COLORS.WHITE);
+DrawFormattedText(w,'You have selected the following trials.\nPlease wait while the payout is calculated.','center',wRect(4)/8,COLORS.WHITE);
 Screen('Flip',w);
 WaitSecs(5);
 
-pay_trial(1) = CCT.data(trials_selected(1)).trialscore;
-pay_trial(2) = CCT.data(STIM.trials+trials_selected(2)).trialscore;
-pay_trial(3) = CCT.data(STIM.trials*2 + trials_selected(3)).trialscore;
+pay_trial(1) = CCT.data(trials_selected(1)).trialscore/100;
+pay_trial(2) = CCT.data(STIM.trials+trials_selected(2)).trialscore/100;
+pay_trial(3) = CCT.data(STIM.trials*2 + trials_selected(3)).trialscore/100;
 
 if any(pay_trial < 0)
     pay_trial(pay_trial<0) = 0;
 end
-%ADD MULTIPLIER OR WHATEVER TO DETERMINE HOW MUCH TO PAY PEOPLE.
+
 total_pay = sum(pay_trial);
 
-CenterTextOnPoint(w,num2str(pay_trial(1)),numsq_textx(1),numsq_texty(1),COLORS.BLACK);
-CenterTextOnPoint(w,num2str(pay_trial(2)),numsq_textx(2),numsq_texty(2),COLORS.BLACK);
-CenterTextOnPoint(w,num2str(pay_trial(3)),numsq_textx(3),numsq_texty(3),COLORS.BLACK);
+CenterTextOnPoint(w,['$' num2str(pay_trial(1))],numsq_textx(1),numsq_texty(1),COLORS.WHITE);
+CenterTextOnPoint(w,['$' num2str(pay_trial(2))],numsq_textx(2),numsq_texty(2),COLORS.WHITE);
+CenterTextOnPoint(w,['$' num2str(pay_trial(3))],numsq_textx(3),numsq_texty(3),COLORS.WHITE);
 Screen('TextSize',w,oldtextsize);
-DrawFormattedText(w,'You have earned the following amount, based on the random trials selected.\nPress any key to continue.','center',wRect(4)/8,COLORS.WHITE);
+DrawFormattedText(w,'You have earned the following amount,\nbased on the random trials selected.','center',wRect(4)/8,COLORS.WHITE);
+DrawFormattedText(w,['Bonus payment: $' sprintf('%0.2f',total_pay) '\n\n\nThis concludes the task.\nPlease alert the experimenter.'],'center',numsq_y2(1)+50,COLORS.WHITE);
 Screen('Flip',w);
-KbWait();
+% KbWait();
+CCT.payment = pay_trial';
+
+
+%Experimenter presses 'q' and the left shift key simultaneously to end the task & save the file, once they
+%have written down the total payment.
+
+while 1
+    [ddown,~,ccode] = KbCheck();
+    endcode = find(ccode);
+    if ddown && length(endcode) == 2;
+        if endcode(2) == KbName('LeftShift') && endcode(1) == KbName('q')
+            break
+        end
+    end
+end
+
+%Save structure here
+[mdir,~,~] = fileparts(which('CCT_go.m'));
+savedir = [mdir filesep 'Results'];
+savename = sprintf('CCT_%03.0f.mat',ID);
+cd(savedir);
+
+if exist(savename,'file')==2;
+    savename = sprintf('CCT_%03.0f_%s_%2.0f%02.0f.mat',ID,date,d(4),d(5));
+end
+
+try
+    save([savedir filesep savename],'CCT');
+catch
+    try
+        warning('Something is amiss with this save. Retrying save in: %s\n',mdir);
+        save([mdir filesep savename],'CCT');
+    catch
+        warning('STILL problems saving. Will attempt to save entire worksapce in whatever folder computer is currently in: %s\n',pwd);
+        save CCT
+    end
+end
+
 
 %% End of task.
-DrawFormattedText(w,'That concludes this stolen version \n of the Columbia Card Task.','center','center',COLORS.WHITE);
-Screen('Flip',w);
-WaitSecs(2);
+% DrawFormattedText(w,'That concludes this stolen version \n of the Columbia Card Task.','center','center',COLORS.WHITE);
+% Screen('Flip',w);
+% WaitSecs(2);
 
 sca
 
