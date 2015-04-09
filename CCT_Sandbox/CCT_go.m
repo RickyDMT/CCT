@@ -6,6 +6,18 @@ global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT rects IMAGE
 commandwindow;
 ID = input('Subject ID:');
 d = clock;
+% fail1='Program aborted. Participant number not entered';% error messagewhich is printed to command window
+%  prompt = {'Enter participant number:'};
+%  dlg_title ='New Participant';
+%  num_lines = 1;
+%  def = {'0'};
+%  answer = inputdlg(prompt,dlg_title,num_lines,def);%presents box to enterdata into
+%  switch isempty(answer)
+%      case 1%deals with both cancel and X presses
+%      error(fail1)
+%      case 0
+%          thissub=(answer{1});
+%  end
 
 KEY = struct;
 KEY.select = KbName('SPACE'); %To end random trial selection 
@@ -127,7 +139,7 @@ end
 %you can set the font sizes and styles here
 Screen('TextFont', w, 'Arial');
 %Screen('TextStyle', w, 1);
-Screen('TextSize',w,30);
+Screen('TextSize',w,27);
 
 KbName('UnifyKeyNames');
 
@@ -145,12 +157,84 @@ IMAGE.gain = Screen('MakeTexture',w,gain_card);
 IMAGE.loss = Screen('MakeTexture',w,loss_card);
 
 %%
-%Instructions
-
-
-DrawFormattedText(w,'The CCT is ready to begin.\nPress any key to continue.','center','center',COLORS.WHITE);
+%Instructions- Page 1
+myFile=fopen('maininstructions.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
 Screen('Flip',w);
 KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
+%Instructions - Page 2
+myFile=fopen('maininstructions2.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+%Screen('DrawTexture',w,gain_card,[],[])
+%Screen('DrawTexture',w,loss_card,[],[])
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
+%Instructions- Page 3
+DrawFormattedText(w,'Let us now show you two example trials before we begin.','center','center',COLORS.WHITE,100);
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
+%Instructions- Page 4
+myFile=fopen('Example1.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+%Need image here
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
+%Instructions- Page 5
+myFile=fopen('Example1reveal.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+%Need image here
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
+%Instructions- Page 6
+myFile=fopen('Example2.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+%Need image here
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
+%Instructions- Page 7
+myFile=fopen('Example2reveal.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+%Need image here
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
+%Instructions- Page 8
+DrawFormattedText(w,'Before the game starts, we would like to ask you a few questions about the task.\n Please wait for further instructions from the experimenter','center','center',COLORS.WHITE,100);
+%Need image here
+Screen('Flip',w);
+KbName(s);
 Screen('Flip',w);
 WaitSecs(2);
 
