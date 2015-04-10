@@ -147,8 +147,8 @@ end
 %%
 %you can set the font sizes and styles here
 Screen('TextFont', w, 'Arial');
-%Screen('TextStyle', w, 1);
-Screen('TextSize',w,27);
+Screen('TextStyle', w, 1);  %Make it bold.
+Screen('TextSize',w,30);
 
 KbName('UnifyKeyNames');
 

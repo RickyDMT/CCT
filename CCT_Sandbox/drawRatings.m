@@ -72,8 +72,8 @@ end
     window=w;
    
 
-Screen('TextFont', window, 'Arial');
-Screen('TextStyle', window, 1);
+% Screen('TextFont', window, 'Arial');
+% Screen('TextStyle', window, 1);
 oldSize = Screen('TextSize',window,35);
 
 % Screen('TextFont', w2, 'Arial');
@@ -97,3 +97,5 @@ end
 
 
 Screen('TextSize',window,oldSize);
+
+end
