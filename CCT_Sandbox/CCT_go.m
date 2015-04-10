@@ -20,7 +20,15 @@ d = clock;
 %  end
 
 KEY = struct;
-KEY.select = KbName('SPACE'); %To end random trial selection 
+KEY.select = KbName('SPACE'); %To end random trial selection
+KEY.ONE= KbName('1!');
+KEY.TWO= KbName('2@');
+KEY.THREE= KbName('3#');
+KEY.FOUR= KbName('4$');
+KEY.FIVE= KbName('5%');
+KEY.SIX= KbName('6^');
+KEY.SEVEN= KbName('7&');
+KEY.all = [KEY.ONE:KEY.SEVEN];
 
 %Hey there!
 COLORS = struct;
@@ -51,6 +59,7 @@ STIM.gainamt = [10 30];
 CCT.var = struct('Block',[],'Trial',[],'LossCards',[],'LossAmt',[],'GainAmt',[]);
 CCT.data = struct('Block',[],'Trial',[],'Outcome',[],'trialscore',[],'rt_firstclick',[],'boxes',[],'time_left',[]);
 CCT.info = struct('SubjID',ID,'Date',date,'Time',sprintf('%2.0f%02.0f',d(4),d(5)));
+CCT.ques = struct('Q1',[],'Q2',[],'Q3',[]);
 
 % CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)];
 % %This might just be different columns of data represnting each block...?
@@ -346,15 +355,50 @@ Screen('Flip',w);
     end
 %     %This is where inter-block questions go.
     %Question Text here.
-%     [press, ~, keycode] = KbCheck();
+    ib_qs = {'Question 1?';
+        'Question 2?';
+        'Question 3?'};
     
-
+    for ibq = 1:3;
+        
+        DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE);
+        drawRatings();
+        Screen('Flip',w);
+        
+        while 1
+            [rate_press, ~, rate_key] = KbCheck();
+            if rate_press && any(rate_key(KEY.all))
+                DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE);
+                rating = KbName(find(rate_key,1));
+                rating = str2num(rating(1));
+                drawRatings(rate_key);
+                Screen('Flip',w);
+                WaitSecs(.25);
+                
+                if ibq == 1;
+                    CCT.ques(block).Q1 = rating;
+                elseif ibq == 2;
+                    CCT.ques(block).Q2 = rating;
+                elseif ibq == 3;
+                    CCT.ques(block).Q3 = rating;
+                end
+                break
+            end
+        end
+        
+    end
+    
+    Screen('Flip',w);
+    WaitSecs(.5);
+    
     if block < STIM.blocks
         endoblock = sprintf('Prepare for Block %d.',block+1);
+    elseif block == STIM.blocks
+        endoblock = 'Now we will choose random trials to pay the bonus money!';
+    end
         DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE);
         Screen('Flip',w);
         KbWait();
-    end
  end
 
 %% Randomized payout.
@@ -452,6 +496,7 @@ while 1
     end
 end
 
+%% SAVE
 %Save structure here
 [mdir,~,~] = fileparts(which('CCT_go.m'));
 savedir = [mdir filesep 'Results'];
