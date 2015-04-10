@@ -4,7 +4,7 @@ function [ varargout ] = DrawImageRects( clicked, varargin )
 %with "1" as a second input in addition to "clicked" (the cards that have
 %been clicked
 
-global rects fail_list
+global rects
 
 %bring in "clicked" array of cards that have been clicked.
 
@@ -14,6 +14,8 @@ if nargin == 1;
         varargout{1} = imagerects;
     end
 elseif nargin == 2;
+    fail_list = varargin{1};
+    
     imagerects_fail = rects(:,fail_list);
     imagerects = rects(:,1:length(clicked));
     imagerects(:,fail_list) = [];

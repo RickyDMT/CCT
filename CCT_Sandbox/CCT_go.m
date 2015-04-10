@@ -30,10 +30,10 @@ COLORS.RED = [255 0 0];
 COLORS.BLUE = [0 0 255];
 COLORS.GREEN = [0 255 0];
 COLORS.YELLOW = [255 255 0];
-COLORS.start = COLORS.BLUE';    %starting color of cards
+COLORS.start = [255; 128; 128];    %starting color of cards
 COLORS.good = COLORS.GREEN';    %color of flipped good card
 COLORS.bad = COLORS.RED';       %color of flipped bad card
-COLORS.butt = [192 192 192]';   %color of buttons
+COLORS.butt = [192; 192; 192];   %color of buttons
 
 DIMS = struct;
 DIMS.grid_row = 4; %These have to been even numbers...
@@ -101,13 +101,13 @@ end
 
 %%
 %change this to 0 to fill whole screen
-DEBUG=0;
+DEBUG=1;
 
 %set up the screen and dimensions
 
 %list all the screens, then just pick the last one in the list (if you have
 %only 1 monitor, then it just chooses that one)
-Screen('Preference', 'SkipSyncTests', 1)
+Screen('Preference', 'SkipSyncTests', 1);
 
 screenNumber=max(Screen('Screens'));
 
@@ -171,16 +171,17 @@ WaitSecs(2);
 myFile=fopen('maininstructions2.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
+% [~, ~, textcoord] = DrawFormattedText(w,'TEXT GOES HERE','center','center',COLORS.WHITE,100);  %Use "textcoord" to show where to place image
 DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
-%Screen('DrawTexture',w,gain_card,[],[])
-%Screen('DrawTexture',w,loss_card,[],[])
+Screen('DrawTexture',w,IMAGE.gain,[],[])    %ADD COORDINATES to SECOND [] BASED OFF OF TEXT POSITION
+Screen('DrawTexture',w,IMAGE.loss,[],[])
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
 WaitSecs(2);
 
 %Instructions- Page 3
-DrawFormattedText(w,'Let us now show you two example trials before we begin.','center','center',COLORS.WHITE,100);
+DrawFormattedText(w,'We will now show you two example trials before we begin.','center','center',COLORS.WHITE,100);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -191,30 +192,114 @@ myFile=fopen('Example1.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
 DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
-%Need image here
+%Need image here (of 1 loss card)
 Screen('Flip',w);
 KbWait;
-Screen('Flip',w);
-WaitSecs(2);
 
-%Instructions- Page 5
-myFile=fopen('Example1reveal.txt','r');
-myText=fgetl(myFile);
-fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
-%Need image here
+%1 loss card, -750 loss, +10 gain
+DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-30,COLORS.WHITE);
+eGainAmt = 10;
+eLossCards = 1;
+eLossAmt = -750;
+etrial_score = 0;
+% clicked = zeros(DIMS.grid_totes,1);
+% efail_list = 10; 
+rectcolor = repmat(COLORS.start,1,(DIMS.grid_totes));
+rectcolor = [rectcolor COLORS.butt];
+Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
+DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);
 Screen('Flip',w);
-KbWait;
-Screen('Flip',w);
-WaitSecs(2);
+
+KbWait();
+%And then reveal
+clicked = zeros(DIMS.grid_totes,1);
+eclicked = randperm(DIMS.grid_totes,7);
+
+for ex_step = 1:7;
+    etrial_score = etrial_score + eGainAmt;
+    clicked(eclicked(1:ex_step)) = 1;
+    
+    Screen('FillRect',w,rectcolor,rects);    
+    DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);
+    [imagerects] = DrawImageRects(clicked);
+    Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+    % Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+%     CountdownClock(tstart,DIMS.trial_dur,rects);    %Runs & displays countdown clock
+    Screen('Flip',w);
+    WaitSecs(.5);
+end
+
+% %"Luckily..."
+% KbWait();
+
+% %Instructions- Page 5
+% myFile=fopen('Example1reveal.txt','r');
+% myText=fgetl(myFile);
+% fclose(myFile);
+% DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+% %Need image here (of 3 loss card)
+% Screen('Flip',w);
+% KbWait;
+% Screen('Flip',w);
+% WaitSecs(2);
 
 %Instructions- Page 6
 myFile=fopen('Example2.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
 DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
-%Need image here
 Screen('Flip',w);
+KbWait();
+
+DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-30,COLORS.WHITE);
+eGainAmt = 30;
+eLossCards = 3;
+eLossAmt = -250;
+etrial_score = 0;
+efail_list = [2;10;11];
+
+Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
+DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);
+Screen('Flip',w);
+
+KbWait();
+%And then reveal
+clicked = zeros(DIMS.grid_totes,1);
+eclicked = [5;23;14;2];
+
+for ex_step = 1:4;
+    
+    clicked(eclicked(1:ex_step)) = 1;
+    
+    [imagerects] = DrawImageRects(clicked);
+    Screen('FillRect',w,rectcolor,rects);
+
+    if ex_step == 4;
+        %reveal loss card
+        Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+        Screen('DrawTextures',w,IMAGE.loss,[],imagerects(:,1)); %Note, this is a misuse of "imagerects." In DoCCT, imagerects_fail is used instead.
+            etrial_score = etrial_score + eLossAmt;
+    else
+        Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+        etrial_score = etrial_score + eGainAmt;
+    end
+    DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);    
+    % Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+%     CountdownClock(tstart,DIMS.trial_dur,rects);    %Runs & displays countdown clock
+    Screen('Flip',w);
+    WaitSecs(.5);
+end
+
+WaitSecs(2);
+
+Screen('FillRect',w,rectcolor,rects);
+DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score,1);
+[imagerects, imagerects_fail] = DrawImageRects(clicked,efail_list);
+Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+Screen('Flip',w);
+
+
 KbWait;
 Screen('Flip',w);
 WaitSecs(2);
@@ -234,12 +319,18 @@ WaitSecs(2);
 DrawFormattedText(w,'Before the game starts, we would like to ask you a few questions about the task.\n Please wait for further instructions from the experimenter','center','center',COLORS.WHITE,100);
 %Need image here
 Screen('Flip',w);
-KbName(s);
+KbName();
 Screen('Flip',w);
 WaitSecs(2);
 
 %% Practice?
 
+% Simple "Now you will do practice" screen.
+
+for prac_trial = 1:2;
+   [~,~,~,~,~] = DoCCT(0);
+end
+Screen('Flip',w);
 
 %% Present multiple trials & blocks.
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals

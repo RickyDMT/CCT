@@ -1,17 +1,17 @@
-function [  ] = DoScoreboard(trialrow, varargin )
+function [  ] = DoScoreboard(trialrow, losscards, lossamt, gainamt, tscore, varargin )
 %DoDisplayScores Displays stuff on screen.
 %   Need to add other stuff here: Trial number, $$$ per good, etc.
 %   Probably need to decide how to index locations...use XCENTER
 %   YCENTER? or wRect?
 
-global w rects CCT COLORS trial_score wRect
+global w rects CCT COLORS wRect
 
 %Base all locations off of some variable to allow proper scaling to
 %different screens.
-Screen('FillRect',w,COLORS.WHITE,rects);
+% Screen('FillRect',w,COLORS.WHITE,rects);
 
 oldsize = Screen('TextSize',w,20);
-tscore = trial_score;
+% tscore = trial_score;
 
 lossa_loc_x = fix(wRect(3)*.05);
 gaina_loc_x = fix(wRect(3)/2);                %Use CenterTextonPoint: This value represents middle coordinate of text box
@@ -34,14 +34,17 @@ toprow_y = botrow_y - 28;
 stop_x = rects(1,length(rects))+50;
 stop_y = rects(2,length(rects))+12;
 
-
-lossc_text = sprintf('Num. of Loss Cards: %d',CCT.var(trialrow).LossCards);
-lossa_text = sprintf('Loss Amount: %d',CCT.var(trialrow).LossAmt);
-gaina_text = sprintf('Gain Amount: %d',CCT.var(trialrow).GainAmt);
+lossc_text = sprintf('Num. of Loss Cards: %d',losscards);%CCT.var(trialrow).LossCards);
+lossa_text = sprintf('Loss Amount: %d',lossamt);%CCT.var(trialrow).LossAmt);
+gaina_text = sprintf('Gain Amount: %d',gainamt);%CCT.var(trialrow).GainAmt);
 
 
 tscore_text = sprintf('Trial Score: %d',tscore);
-trial_text = sprintf('Trial: %d',CCT.var(trialrow).Trial);
+if trialrow == 0;
+    trial_text = 'Trial: Example';
+else
+    trial_text = sprintf('Trial: %d',CCT.var(trialrow).Trial);
+end
 
 % if trial == 1; 
 %     cumscore_text = 'Total Score: 0        ';
@@ -61,7 +64,7 @@ DrawFormattedText(w,trial_text,lossa_loc_x,toprow_y,COLORS.WHITE);
 
 %Button text
 
-if nargin == 2;
+if nargin == 6;
     DrawFormattedText(w,'Next Trial','center',rects(2,end)+2,COLORS.BLACK);
 else
     DrawFormattedText(w,'STOP!','center',rects(2,end)+2,COLORS.BLACK);

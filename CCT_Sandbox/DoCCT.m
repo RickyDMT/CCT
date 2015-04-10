@@ -2,7 +2,7 @@ function [ score, outcome, boxes, time_left,rt_first ] = DoCCT(trialrow)
 %CCT Runs Columbia card task, trial-by-trial
 %   Coded by: ELK
 
-global w DIMS CCT COLORS trial_score rects IMAGE fail_list
+global w DIMS CCT COLORS rects IMAGE STIM
 
 
 
@@ -24,7 +24,9 @@ rectcolor = [rectcolor COLORS.butt];
 
 %[rectcolor,gameover] = Click4Color(clicked,fail_list);      %chooses color for cards; tests for good/bad flip
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
-DoScoreboard(trialrow);                                             %Displays scores, trial, bads, etc.
+
+
+DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
 
 %Timer stuff
 tstart = tic;
@@ -44,14 +46,14 @@ while telap < DIMS.trial_dur;
         if any(clicked)
             telap = CountdownClock(tstart,DIMS.trial_dur,rects);
             Screen('FillRect',w,rectcolor,rects);
-            DoScoreboard(trialrow);
+            DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
             Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
             Screen('Flip',w);
             
         else %no button ever pressed; updated & reflip everything
             telap = CountdownClock(tstart,DIMS.trial_dur,rects);
             Screen('FillRect',w,rectcolor,rects);
-            DoScoreboard(trialrow);
+            DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
             Screen('Flip',w);
         end
 
@@ -62,14 +64,14 @@ while telap < DIMS.trial_dur;
         if any(clicked)
             telap = CountdownClock(tstart,DIMS.trial_dur,rects);
             Screen('FillRect',w,rectcolor,rects);
-            DoScoreboard(trialrow);
+            DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
             Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
             Screen('Flip',w);
             
         else %no button ever pressed; updated & reflip everything
             telap = CountdownClock(tstart,DIMS.trial_dur,rects);
             Screen('FillRect',w,rectcolor,rects);
-            DoScoreboard(trialrow);
+            DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
             Screen('Flip',w);
         end
     end
@@ -80,14 +82,14 @@ while telap < DIMS.trial_dur;
         if any(clicked)
             telap = CountdownClock(tstart,DIMS.trial_dur,rects);
             Screen('FillRect',w,rectcolor,rects);
-            DoScoreboard(trialrow);
+            DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
             Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
             Screen('Flip',w);
             
         else %no button ever pressed; updated & reflip everything
             telap = CountdownClock(tstart,DIMS.trial_dur,rects);
             Screen('FillRect',w,rectcolor,rects);
-            DoScoreboard(trialrow);
+            DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
             Screen('Flip',w);
         end
     end
@@ -119,8 +121,8 @@ while telap < DIMS.trial_dur;
                         
 %                         DrawFormattedText(w,'You lose.','center',rects(2,end)+45,COLORS.RED);
                         %Screen('FillRect',w,rectcolor,rects);
-                        DoScoreboard(trialrow);
-                        [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+                        DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
+                        [imagerects, imagerects_fail] = DrawImageRects(clicked,fail_list);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                         Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
                         Screen('Flip',w);
@@ -142,12 +144,12 @@ while telap < DIMS.trial_dur;
                         DrawFormattedText(w,'You win.','center',rects(2,end)+45,COLORS.RED);
 
 
-                        [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+                        [imagerects, imagerects_fail] = DrawImageRects(clicked,fail_list);
 %                         Screen('DrawTextures',w,IMAGE.gain);
 %                         Screen('DrawTextures',w,IMAGE.loss);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                         Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
-                        DoScoreboard(trialrow);
+                        DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
                         
                         Screen('Flip',w);
                         
@@ -166,7 +168,7 @@ while telap < DIMS.trial_dur;
                         [imagerects] = DrawImageRects(clicked);
                         Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                         telap = CountdownClock(tstart,DIMS.trial_dur,rects);
-                        DoScoreboard(trialrow);
+                        DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
                         Screen('Flip',w);
                         
                         if length(find(clicked)) == 1;
@@ -187,12 +189,12 @@ while telap < DIMS.trial_dur;
 %                     DrawFormattedText(w,'Moving to next trial!','center',rects(2,end)+45,COLORS.RED);
 %                 end
 %                 rectcolor = Reveal4Color(fail_list);
-%                 Screen('FillRect',w,rectcolor,rects);
+                Screen('FillRect',w,rectcolor,rects);
                 if ~any(clicked);
                     rt_first = NaN;
                 end
-                DoScoreboard(trialrow);
-                [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+                DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
+                [imagerects, imagerects_fail] = DrawImageRects(clicked,fail_list);
                 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
                 Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
                 Screen('Flip',w);
@@ -226,8 +228,8 @@ if telap >= DIMS.trial_dur;
     
     DrawFormattedText(w,'Time is up.','center',rects(2,end)+45,COLORS.RED);
     Screen('FillRect',w,rectcolor,rects);
-    DoScoreboard(trialrow);
-    [imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+    DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score);
+    [imagerects, imagerects_fail] = DrawImageRects(clicked,fail_list);
     Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
     Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
     Screen('Flip',w);
@@ -241,9 +243,9 @@ if telap >= DIMS.trial_dur;
 end
 
 DrawFormattedText(w,'Press "Next Trial" to continue.','center',rects(2,end)+45,COLORS.GREEN);
-% Screen('FillRect',w,rectcolor,rects);
-DoScoreboard(trialrow,1);
-[imagerects, imagerects_fail] = DrawImageRects(clicked,1);
+Screen('FillRect',w,rectcolor,rects);
+DoScoreboard(trialrow,LossCards,LossAmt,GainAmt,trial_score,1);
+[imagerects, imagerects_fail] = DrawImageRects(clicked,fail_list);
 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
 Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
 Screen('Flip',w);
