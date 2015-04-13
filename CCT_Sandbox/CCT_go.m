@@ -110,7 +110,7 @@ end
 
 %%
 %change this to 0 to fill whole screen
-DEBUG=1;
+DEBUG=0;
 
 %set up the screen and dimensions
 
@@ -128,7 +128,7 @@ if DEBUG==1;
     YCENTER=240;
 else
     %change screen resolution
-    %Screen('Resolution',0,1024,768,[],32);
+    Screen('Resolution',0,1024,768,[],32);
     
     %this gives the x and y dimensions of our screen, in pixels.
     [swidth, sheight] = Screen('WindowSize', screenNumber);
@@ -148,7 +148,7 @@ end
 %you can set the font sizes and styles here
 Screen('TextFont', w, 'Arial');
 Screen('TextStyle', w, 1);  %Make it bold.
-Screen('TextSize',w,30);
+Screen('TextSize',w,27);
 
 KbName('UnifyKeyNames');
 
@@ -170,43 +170,65 @@ IMAGE.loss = Screen('MakeTexture',w,loss_card);
 myFile=fopen('maininstructions.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
-WaitSecs(2);
+WaitSecs(.5);
 
-%Instructions - Page 2
+%Instructions- Page 2
+myFile=fopen('maininstructions1.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(.5);
+
+%Instructions- Page 3
 myFile=fopen('maininstructions2.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(.5);
+
+%Instructions - Page 4
+myFile=fopen('maininstructions3.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
 % [~, ~, textcoord] = DrawFormattedText(w,'TEXT GOES HERE','center','center',COLORS.WHITE,100);  %Use "textcoord" to show where to place image
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
-Screen('DrawTexture',w,IMAGE.gain,[],[])    %ADD COORDINATES to SECOND [] BASED OFF OF TEXT POSITION
-Screen('DrawTexture',w,IMAGE.loss,[],[])
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+%Screen('DrawTexture',w,IMAGE.gain,[],[])    %ADD COORDINATES to SECOND [] BASED OFF OF TEXT POSITION
+%Screen('DrawTexture',w,IMAGE.loss,[],[])
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
-WaitSecs(2);
+WaitSecs(.5);
 
-%Instructions- Page 3
-DrawFormattedText(w,'We will now show you two example trials before we begin.','center','center',COLORS.WHITE,100);
+%Instructions- Page 5
+DrawFormattedText(w,'We will now show you two example trials before we begin.\n\nPress space to begin.','center','center',COLORS.WHITE,60);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
-WaitSecs(2);
+WaitSecs(.5);
 
-%Instructions- Page 4
+%Instructions- Page 6
 myFile=fopen('Example1.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
 %Need image here (of 1 loss card)
 Screen('Flip',w);
 KbWait;
+Screen('Flip',w);
+WaitSecs(.5);
 
 %1 loss card, -750 loss, +10 gain
-DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-30,COLORS.WHITE);
+DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-45,COLORS.WHITE);
 eGainAmt = 10;
 eLossCards = 1;
 eLossAmt = -750;
@@ -218,7 +240,6 @@ rectcolor = [rectcolor COLORS.butt];
 Screen('FillRect',w,rectcolor,rects);                       %Draws rectangles.
 DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);
 Screen('Flip',w);
-
 KbWait();
 %And then reveal
 clicked = zeros(DIMS.grid_totes,1);
@@ -238,6 +259,7 @@ for ex_step = 1:7;
     WaitSecs(.5);
 end
 
+%DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-45,COLORS.WHITE);
 % %"Luckily..."
 % KbWait();
 
@@ -252,15 +274,16 @@ end
 % Screen('Flip',w);
 % WaitSecs(2);
 
-%Instructions- Page 6
+%Instructions- Page 7
 myFile=fopen('Example2.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
 Screen('Flip',w);
 KbWait();
+WaitSecs(2);
 
-DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-30,COLORS.WHITE);
+DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-45,COLORS.WHITE);
 eGainAmt = 30;
 eLossCards = 3;
 eLossAmt = -250;
@@ -272,6 +295,7 @@ DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);
 Screen('Flip',w);
 
 KbWait();
+WaitSecs(2);
 %And then reveal
 clicked = zeros(DIMS.grid_totes,1);
 eclicked = [5;23;14;2];
@@ -313,24 +337,17 @@ KbWait;
 Screen('Flip',w);
 WaitSecs(2);
 
-%Instructions- Page 7
+%Instructions- Page 8
 myFile=fopen('Example2reveal.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
 %Need image here
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
 WaitSecs(2);
 
-%Instructions- Page 8
-DrawFormattedText(w,'Before the game starts, we would like to ask you a few questions about the task.\n Please wait for further instructions from the experimenter','center','center',COLORS.WHITE,100);
-%Need image here
-Screen('Flip',w);
-KbName();
-Screen('Flip',w);
-WaitSecs(2);
 
 %% Practice?
 
@@ -340,6 +357,14 @@ for prac_trial = 1:2;
    [~,~,~,~,~] = DoCCT(0);
 end
 Screen('Flip',w);
+
+%Instructions- Page 9
+DrawFormattedText(w,'Before the game starts, we would like to ask you a few questions about the task.\n Please wait for further instructions from the experimenter','center','center',COLORS.WHITE,100);
+%Need image here
+Screen('Flip',w);
+KbName();
+Screen('Flip',w);
+WaitSecs(2);
 
 %% Present multiple trials & blocks.
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals

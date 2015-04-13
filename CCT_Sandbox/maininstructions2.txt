@@ -1,5 +1,1 @@
-The Gain Card: For every gain card you turn over, your score increases by either 10 or 30 points in different rounds. \n\n\nThe Loss Card: For every loss card you turn over, your score decreases by either 250 or 750 points, depending on the round. Furthermore, the round immediately ends (you cannot turn over any more cards). There will be either 1 or 3 loss cards in different rounds. \n\n\n The number of loss cards and the value of points that can be won or lost by turning over a gain or loss card are fixed in each round. This information will always be on display so you know what kind of round you are in
-
-
-
-
+You will have 18 seconds to make your choice. If you fail to choose within that time, you will be advanced automatically to the next round. A timer in the middle of the screen will let you know how much time you have remaining. \n\nYou will play a total of 24 rounds, three of which will be randomly selected at the end of the session, and you will be paid out for those in real money. Each point is worth 1 cent. \n\nThis game is for real money and requires some concentration. Please minimize distractions in your environment and close any other programs running in the background.\n\n Press space to continue.
