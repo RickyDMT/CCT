@@ -128,7 +128,7 @@ if DEBUG==1;
     YCENTER=240;
 else
     %change screen resolution
-    Screen('Resolution',0,1024,768,[],32);
+    %Screen('Resolution',0,1024,768,[],32);
     
     %this gives the x and y dimensions of our screen, in pixels.
     [swidth, sheight] = Screen('WindowSize', screenNumber);
@@ -259,20 +259,28 @@ for ex_step = 1:7;
     WaitSecs(.5);
 end
 
-%DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-45,COLORS.WHITE);
-% %"Luckily..."
-% KbWait();
+WaitSecs(2);
+Screen('FillRect',w,rectcolor,rects);
+DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);
+[imagerects] = DrawImageRects(clicked);
+Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
+DrawFormattedText(w,'Luckily in this round you did not turn over a loss cards. Press space to learn more about this trial.','center',wRect(4)-600,COLORS.WHITE,60);
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
 
 % %Instructions- Page 5
-% myFile=fopen('Example1reveal.txt','r');
-% myText=fgetl(myFile);
-% fclose(myFile);
-% DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
-% %Need image here (of 3 loss card)
-% Screen('Flip',w);
-% KbWait;
-% Screen('Flip',w);
-% WaitSecs(2);
+myFile=fopen('Example1reveal.txt','r');
+myText=fgetl(myFile);
+fclose(myFile);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+%Need image here (of 3 loss card)
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
 
 %Instructions- Page 7
 myFile=fopen('Example2.txt','r');
@@ -323,19 +331,19 @@ for ex_step = 1:4;
     WaitSecs(.5);
 end
 
-WaitSecs(2);
 
+WaitSecs(2);
 Screen('FillRect',w,rectcolor,rects);
 DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score,1);
 [imagerects, imagerects_fail] = DrawImageRects(clicked,efail_list);
 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
 Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
+DrawFormattedText(w,'This time, the fourth card you turned was a loss card.  The round immediately will end when you turn over a loss card.  Press space to learn more about this trial.','center',wRect(4)-600,COLORS.WHITE,60);
 Screen('Flip',w);
-
-
 KbWait;
 Screen('Flip',w);
 WaitSecs(2);
+
 
 %Instructions- Page 8
 myFile=fopen('Example2reveal.txt','r');
@@ -351,7 +359,13 @@ WaitSecs(2);
 
 %% Practice?
 
-% Simple "Now you will do practice" screen.
+DrawFormattedText(w,'Now you will complete two practice rounds of the game. Press space to begin.','center','center',COLORS.WHITE,60,[],[],1.5);
+%Need image here
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
 
 for prac_trial = 1:2;
    [~,~,~,~,~] = DoCCT(0);
@@ -380,13 +394,13 @@ WaitSecs(2);
     end
 %     %This is where inter-block questions go.
     %Question Text here.
-    ib_qs = {'Question 1?';
-        'Question 2?';
-        'Question 3?'};
+    ib_qs = {'How positive are you feeling right now? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
+        'How aroused are you feeling right now? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
+        'How confident are you feeling right now? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard'};
     
     for ibq = 1:3;
         
-        DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE);
+        DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE,60);
         drawRatings();
         Screen('Flip',w);
         
