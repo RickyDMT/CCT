@@ -147,8 +147,8 @@ end
 %%
 %you can set the font sizes and styles here
 Screen('TextFont', w, 'Arial');
-Screen('TextStyle', w, 1);  %Make it bold.
-Screen('TextSize',w,27);
+Screen('TextStyle', w,1);  %Make it bold.
+Screen('TextSize',w,22);
 
 KbName('UnifyKeyNames');
 
@@ -228,6 +228,7 @@ Screen('Flip',w);
 WaitSecs(.5);
 
 %1 loss card, -750 loss, +10 gain
+DrawFormattedText(w,'You see 32 unknown cards. The scoreboard shows you that 1 of the cards is a loss card. Each gain card is worth 10 points to you, and the loss card will cost you 750 points. Let us suppose you decide to turn over 7 cards and then stop.','center',wRect(4)-610,COLORS.WHITE,68);
 DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-45,COLORS.WHITE);
 eGainAmt = 10;
 eLossCards = 1;
@@ -264,23 +265,23 @@ Screen('FillRect',w,rectcolor,rects);
 DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);
 [imagerects] = DrawImageRects(clicked);
 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
-DrawFormattedText(w,'Luckily in this round you did not turn over a loss cards. Press space to learn more about this trial.','center',wRect(4)-600,COLORS.WHITE,60);
+DrawFormattedText(w,'Luckily, none of the seven cards you turned over happened to be the loss card, so your score for this round was 70. Press space to see the next example.','center',wRect(4)-600,COLORS.WHITE,60);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
 WaitSecs(2);
 
 
-% %Instructions- Page 5
-myFile=fopen('Example1reveal.txt','r');
-myText=fgetl(myFile);
-fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
-%Need image here (of 3 loss card)
-Screen('Flip',w);
-KbWait;
-Screen('Flip',w);
-WaitSecs(2);
+% Instructions- Page 5
+% myFile=fopen('Example1reveal.txt','r');
+% myText=fgetl(myFile);
+% fclose(myFile);
+% DrawFormattedText(w,myText,'center','center',COLORS.WHITE,100);
+% %Need image here (of 3 loss card)
+% Screen('Flip',w);
+% KbWait;
+% Screen('Flip',w);
+% WaitSecs(2);
 
 %Instructions- Page 7
 myFile=fopen('Example2.txt','r');
@@ -291,6 +292,7 @@ Screen('Flip',w);
 KbWait();
 WaitSecs(2);
 
+DrawFormattedText(w,'The scoreboard shows you that 3 of these cards are loss cards. ITurning over each gain card is worth 30 points to you, and that turning over a loss card will cost you 250 points. Let us suppose you decide to turn over 10 cards.','center',wRect(4)-610,COLORS.WHITE,68);
 DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-45,COLORS.WHITE);
 eGainAmt = 30;
 eLossCards = 3;
@@ -360,7 +362,6 @@ WaitSecs(2);
 %% Practice?
 
 DrawFormattedText(w,'Now you will complete two practice rounds of the game. Press space to begin.','center','center',COLORS.WHITE,60,[],[],1.5);
-%Need image here
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -380,7 +381,22 @@ KbName();
 Screen('Flip',w);
 WaitSecs(2);
 
+
+
 %% Present multiple trials & blocks.
+
+DrawFormattedText(w,'You are now all set to begin. Please press space to begin to Block 1.','center','center',COLORS.WHITE,60,[],[],1.5);
+Screen('Flip',w);
+KbWait;
+Screen('Flip',w);
+WaitSecs(2);
+
+DrawFormattedText(w,'Prepare for Block 1.','center','center',COLORS.WHITE,60,[],[],1.5);
+Screen('Flip',w);
+% KbWait;
+% Screen('Flip',w);
+WaitSecs(4);
+
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
     for trial = 1:STIM.trials;
         %BIOPAC PULSE FOR START
@@ -392,11 +408,20 @@ WaitSecs(2);
         [CCT.data(trialrow).trialscore, CCT.data(trialrow).Outcome, CCT.data(trialrow).boxes, CCT.data(trialrow).time_left, CCT.data(trialrow).rt_firstclick] = DoCCT(trialrow);
         
     end
+%End of Block  
+if block <= STIM.blocks
+        endoblock = sprintf('You have come to end of Block %d. You will now answer some questions before you proceed to the next Block. Press space to continue.',block);
+        DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE, 60);
+        Screen('Flip',w);
+        KbWait();
+ end
+
+    
 %     %This is where inter-block questions go.
     %Question Text here.
-    ib_qs = {'How positive are you feeling right now? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
-        'How aroused are you feeling right now? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
-        'How confident are you feeling right now? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard'};
+    ib_qs = {'How positive were you feeling during the task? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
+        'How aroused were you feeling during the task? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
+        'How confident were you feeling during the tas? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard'};
     
     for ibq = 1:3;
         
@@ -437,7 +462,7 @@ WaitSecs(2);
     end
         DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE);
         Screen('Flip',w);
-        KbWait();
+        WaitSecs(4);`
  end
 
 %% Randomized payout.

@@ -131,7 +131,7 @@ while telap < DIMS.trial_dur;
                         if length(find(clicked)) == 1;
                             rt_first = clicktime;
                         end
-                        WaitSecs(2); 
+                        WaitSecs(.5); 
                         
                         break
                     elseif length(clicked(clicked==1)) == (DIMS.grid_totes - LossCards); %You clicked very last gain card
@@ -153,7 +153,7 @@ while telap < DIMS.trial_dur;
                         
                         Screen('Flip',w);
                         
-                        WaitSecs(2);
+                        WaitSecs(.5);
                         
                         outcome = 1;
                         time_left = DIMS.trial_dur - (clicktime);                        
@@ -200,7 +200,7 @@ while telap < DIMS.trial_dur;
                 Screen('Flip',w);
                 outcome = 2;
                 time_left = DIMS.trial_dur - (clicktime);
-                WaitSecs(2); 
+                WaitSecs(.5); 
                 
                 break
             end
@@ -239,7 +239,7 @@ if telap >= DIMS.trial_dur;
     if ~any(clicked);
         rt_first = NaN;
     end
-    WaitSecs(2); % XXX Have subj click on button to continue.
+    WaitSecs(.5); % XXX Have subj click on button to continue.
 end
 
 DrawFormattedText(w,'Press "Next Trial" to continue.','center',rects(2,end)+45,COLORS.GREEN);
