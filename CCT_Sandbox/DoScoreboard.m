@@ -15,7 +15,7 @@ oldsize = Screen('TextSize',w,20);
 
 lossa_loc_x = fix(wRect(3)*.05);
 gaina_loc_x = fix(wRect(3)/2);                %Use CenterTextonPoint: This value represents middle coordinate of text box
-lossc_loc_x = fix((wRect(3)*(9/10)) -150);      %Write text that ends at 10% border on right side of screen, ASSUMES 100 pixel length
+lossc_loc_x = fix((wRect(3)*(9/10))-200);      %Write text that ends at 10% border on right side of screen, ASSUMES 100 pixel length
 
 botrow_y = rects(2,end) - 30;
 toprow_y = botrow_y - 28;
