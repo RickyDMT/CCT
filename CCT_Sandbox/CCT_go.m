@@ -3,6 +3,12 @@ function CCT_go()
 global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT rects IMAGE
 %Add "Press space to start round."
 %Fix spacing in task.
+prompt={'Practice?'};
+defAns={'0'};
+
+answer=inputdlg(prompt,'Please input subject info',1,defAns);
+prac=str2double(answer{1});
+
 commandwindow;
 ID = input('Subject ID:');
 d = clock;
@@ -18,6 +24,7 @@ d = clock;
 %      case 0
 %          thissub=(answer{1});
 %  end
+KbName('UnifyKeyNames');
 
 KEY = struct;
 KEY.select = KbName('SPACE'); %To end random trial selection
@@ -28,7 +35,7 @@ KEY.FOUR= KbName('4$');
 KEY.FIVE= KbName('5%');
 KEY.SIX= KbName('6^');
 KEY.SEVEN= KbName('7&');
-KEY.all = [KEY.ONE:KEY.SEVEN];
+KEY.all = KEY.ONE:KEY.SEVEN;
 
 %Hey there!
 COLORS = struct;
@@ -159,13 +166,25 @@ DIMS.endtext_loc_y = min(rects(2,:))-20;
 % Screen('FillRect',w,COLORS.WHITE,rects);
 % Screen('Flip',w);
 
+%% BioPac Setup
+%This readies the BioPac unit. Uses io64 mex file from
+%http://apps.usd.edu/coglab/psyc770/IO64.html with "address" hard coded
+%into outp.m file (i.e., 8224 for room 133, 12320 for room 135). For other
+%computers, find the parallel port address and input that hex value as a
+%dec into the outp.m file.
+
+%Trigger pulses coded in doCompeteTrial.m
+config_io;
+outp(0);
+
 %% Set up images; needs to wait for screen setup.
 
 IMAGE = struct;
 IMAGE.gain = Screen('MakeTexture',w,gain_card);
 IMAGE.loss = Screen('MakeTexture',w,loss_card);
 
-%%
+%% PRACTICE & EXAMPLES?
+if prac == 1
 %Instructions- Page 1
 myFile=fopen('maininstructions.txt','r');
 myText=fgetl(myFile);
@@ -359,7 +378,7 @@ Screen('Flip',w);
 WaitSecs(2);
 
 
-%% Practice?
+%% Practice
 
 DrawFormattedText(w,'Now you will complete two practice rounds of the game. Press space to begin.','center','center',COLORS.WHITE,60,[],[],1.5);
 Screen('Flip',w);
@@ -381,7 +400,7 @@ KbName();
 Screen('Flip',w);
 WaitSecs(2);
 
-
+end
 
 %% Present multiple trials & blocks.
 
@@ -400,8 +419,9 @@ WaitSecs(4);
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
     for trial = 1:STIM.trials;
         %BIOPAC PULSE FOR START
-%         outp(1);
-%         WaitSecs(.05);
+        outp(1);
+        WaitSecs(.01);
+        outp(0);
 
         trialrow = (block-1)*STIM.trials + trial;
         
@@ -419,9 +439,9 @@ if block <= STIM.blocks
     
 %     %This is where inter-block questions go.
     %Question Text here.
-    ib_qs = {'How positive were you feeling during the task? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
-        'How aroused were you feeling during the task? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
-        'How confident were you feeling during the tas? Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard'};
+    ib_qs = {'How positive were you feeling during the task?\n\n\n Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
+        'How aroused were you feeling during the task?\n\n\n Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
+        'How confident were you feeling during the tas?\n\n\n Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard'};
     
     for ibq = 1:3;
         
@@ -432,9 +452,9 @@ if block <= STIM.blocks
         while 1
             [rate_press, ~, rate_key] = KbCheck();
             if rate_press && any(rate_key(KEY.all))
-                DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE);
+                DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE,60);
                 rating = KbName(find(rate_key,1));
-                rating = str2num(rating(1));
+                rating = str2num(rating(1)); %#ok<*ST2NM>
                 drawRatings(rate_key);
                 Screen('Flip',w);
                 WaitSecs(.25);
@@ -446,6 +466,8 @@ if block <= STIM.blocks
                 elseif ibq == 3;
                     CCT.ques(block).Q3 = rating;
                 end
+                Screen('Flip',w);
+                WaitSecs(.25);
                 break
             end
         end
@@ -462,7 +484,7 @@ if block <= STIM.blocks
     end
         DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE);
         Screen('Flip',w);
-        WaitSecs(4);`
+        WaitSecs(4);
  end
 
 %% Randomized payout.
@@ -552,13 +574,14 @@ CCT.payment = pay_trial';
 
 while 1
     [ddown,~,ccode] = KbCheck();
-    endcode = find(ccode);
-    if ddown && length(endcode) == 2;
-        if endcode(2) == KbName('LeftShift') && endcode(1) == KbName('q')
+%     endcode = find(ccode);
+    if ddown && find(ccode) == KbName('F12');
+%         if endcode(2) == KbName('LeftShift') && endcode(1) == KbName('q')
             break
-        end
+%         end
     end
 end
+Screen('Flip',w);
 
 %% SAVE
 %Save structure here

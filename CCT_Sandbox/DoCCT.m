@@ -115,8 +115,9 @@ while telap < DIMS.trial_dur;
 
                     if ~isempty(fail_list(fail_list == clickedonbox)) %if you clicked on loss
                         %BIOPAC PULSE
-%                         outp(4);
-%                         WaitSecs(.05);
+                        outp(4);
+                        WaitSecs(.01);
+                        outp(0);
                         trial_score = trial_score + LossAmt;
                         
 %                         DrawFormattedText(w,'You lose.','center',rects(2,end)+45,COLORS.RED);
@@ -136,8 +137,9 @@ while telap < DIMS.trial_dur;
                         break
                     elseif length(clicked(clicked==1)) == (DIMS.grid_totes - LossCards); %You clicked very last gain card
                         %BIOPAC PULSE
-%                         outp(8);
-%                         WaitSecs(.05);
+                        outp(4);
+                        WaitSecs(.01);
+                        outp(0);
                         Screen('Flip',w);
 
                         trial_score = trial_score + GainAmt;
@@ -161,8 +163,9 @@ while telap < DIMS.trial_dur;
                         
                     else %You clicked a gain card
                         %BioPacPulse
-%                         outp(2);
-%                         WaitSecs(.05);
+                        outp(2);
+                        WaitSecs(.01);
+                        outp(0);
                         trial_score = trial_score + GainAmt;
                         Screen('FillRect',w,rectcolor,rects);
                         [imagerects] = DrawImageRects(clicked);
@@ -179,8 +182,9 @@ while telap < DIMS.trial_dur;
                 end
             elseif clickedonbox == DIMS.grid_totes+1 %End trial button
                 %Biopac pulse
-%                 outp(16);
-%                 WaitSecs(.05);
+                outp(4);
+                WaitSecs(.01);
+                outp(0);
                 
 %                 if ~any(clicked)
 %                     DrawFormattedText(w,'You have selected no cards. Starting new trial.','center',rects(2,end)+45,COLORS.RED);
@@ -225,6 +229,9 @@ while telap < DIMS.trial_dur;
 end
 
 if telap >= DIMS.trial_dur;
+    outp(4);
+    WaitSecs(.01);
+    outp(0);
     
     DrawFormattedText(w,'Time is up.','center',rects(2,end)+45,COLORS.RED);
     Screen('FillRect',w,rectcolor,rects);
