@@ -489,7 +489,7 @@ if block <= STIM.blocks
 
 %% Randomized payout.
 %Where should random numbers be displayed? What size?
-numsq_side = 75;
+numsq_side = 90;
 numsq_y1 = repmat(fix(wRect(4)/3),1,3);
 numsq_y2 = numsq_y1 + numsq_side;
 numsq_texty = numsq_y1 + numsq_side/2;
@@ -500,23 +500,25 @@ numsq_x2 = numsq_x1 + numsq_side;
 squares4nums = [numsq_x1; numsq_y1; numsq_x2; numsq_y2];
 trials_selected = NaN(3,1);
 
+%TURN THIS TO ONE & DONE.
+
 for rnd_trial = 1:3;
     FlushEvents();
     while 1
         selected = randperm(STIM.trials,3);
-        if rnd_trial == 1;
+%         if rnd_trial == 1;
             s1 = sprintf('%d',selected(1));
             s2 = sprintf('%d',selected(2));
             s3 = sprintf('%d',selected(3));
-        elseif rnd_trial == 2;
-            s1 = sprintf('%d',trials_selected(1));
-            s2 = sprintf('%d',selected(2));
-            s3 = sprintf('%d',selected(3));
-        elseif rnd_trial == 3;
-            s1 = sprintf('%d',trials_selected(1));
-            s2 = sprintf('%d',trials_selected(2));
-            s3 = sprintf('%d',selected(3));
-        end
+%         elseif rnd_trial == 2;
+%             s1 = sprintf('%d',trials_selected(1));
+%             s2 = sprintf('%d',selected(2));
+%             s3 = sprintf('%d',selected(3));
+%         elseif rnd_trial == 3;
+%             s1 = sprintf('%d',trials_selected(1));
+%             s2 = sprintf('%d',trials_selected(2));
+%             s3 = sprintf('%d',selected(3));
+%         end
         
         Screen('FillRect',w,COLORS.WHITE,squares4nums);
         Screen('TextSize',w,60);
@@ -524,13 +526,13 @@ for rnd_trial = 1:3;
         CenterTextOnPoint(w,s2,numsq_textx(2),numsq_texty(2),COLORS.RED);
         CenterTextOnPoint(w,s3,numsq_textx(3),numsq_texty(3),COLORS.RED);
         Screen('TextSize',w,30);
-        DrawFormattedText(w,'Press the space bar to choose\na trial from each block to payout!','center',wRect(4)/8,COLORS.WHITE);
+        DrawFormattedText(w,'Press the space bar to choose\na trials from each block to payout!','center',wRect(4)/8,COLORS.WHITE);
 
         Screen('Flip',w);
 
         [Down, ~, Code] = KbCheck();
             if Down == 1 && any(find(Code) == KEY.select);
-                trials_selected(rnd_trial) = selected(rnd_trial);
+                trials_selected = selected;
                 WaitSecs(.01);
 
                 break;
