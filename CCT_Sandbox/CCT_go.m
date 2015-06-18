@@ -3,15 +3,18 @@ function CCT_go()
 global KEY COLORS w wRect XCENTER YCENTER DIMS STIM CCT rects IMAGE
 %Add "Press space to start round."
 %Fix spacing in task.
-prompt={'Practice?'};
-defAns={'0'};
 
+prompt={'Practice?'};
+defAns={'1'};
 answer=inputdlg(prompt,'Please input subject info',1,defAns);
 prac=str2double(answer{1});
 
 commandwindow;
 ID = input('Subject ID:');
 d = clock;
+Mindfulness = input('Condition:');
+
+% cond = input('Condition:');
 % fail1='Program aborted. Participant number not entered';% error messagewhich is printed to command window
 %  prompt = {'Enter participant number:'};
 %  dlg_title ='New Participant';
@@ -35,6 +38,8 @@ KEY.FOUR= KbName('4$');
 KEY.FIVE= KbName('5%');
 KEY.SIX= KbName('6^');
 KEY.SEVEN= KbName('7&');
+% KEY.EIGHT= KbName('8*');
+% KEY.NINE= KbName('9(');
 KEY.all = KEY.ONE:KEY.SEVEN;
 
 %Hey there!
@@ -65,7 +70,7 @@ STIM.gainamt = [10 30];
 
 CCT.var = struct('Block',[],'Trial',[],'LossCards',[],'LossAmt',[],'GainAmt',[]);
 CCT.data = struct('Block',[],'Trial',[],'Outcome',[],'trialscore',[],'rt_firstclick',[],'boxes',[],'time_left',[]);
-CCT.info = struct('SubjID',ID,'Date',date,'Time',sprintf('%2.0f%02.0f',d(4),d(5)));
+CCT.info = struct('SubjID',ID,'Date',date,'Time',sprintf('%2.0f%02.0f',d(4),d(5)),'Condition',Mindfulness);
 CCT.ques = struct('Q1',[],'Q2',[],'Q3',[]);
 
 % CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)];
@@ -155,7 +160,7 @@ end
 %you can set the font sizes and styles here
 Screen('TextFont', w, 'Arial');
 Screen('TextStyle', w,1);  %Make it bold.
-Screen('TextSize',w,22);
+Screen('TextSize',w,18);
 
 KbName('UnifyKeyNames');
 
@@ -189,7 +194,7 @@ if prac == 1
 myFile=fopen('maininstructions.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -199,7 +204,7 @@ WaitSecs(.5);
 myFile=fopen('maininstructions1.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -209,7 +214,7 @@ WaitSecs(.5);
 myFile=fopen('maininstructions2.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,73,[],[],1.5);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -220,7 +225,7 @@ myFile=fopen('maininstructions3.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
 % [~, ~, textcoord] = DrawFormattedText(w,'TEXT GOES HERE','center','center',COLORS.WHITE,100);  %Use "textcoord" to show where to place image
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,73,[],[],1.5);
 %Screen('DrawTexture',w,IMAGE.gain,[],[])    %ADD COORDINATES to SECOND [] BASED OFF OF TEXT POSITION
 %Screen('DrawTexture',w,IMAGE.loss,[],[])
 Screen('Flip',w);
@@ -229,7 +234,7 @@ Screen('Flip',w);
 WaitSecs(.5);
 
 %Instructions- Page 5
-DrawFormattedText(w,'We will now show you two example trials before we begin.\n\nPress space to begin.','center','center',COLORS.WHITE,60);
+DrawFormattedText(w,'We will now show you two example trials before we begin.\n\nPress space to begin.','center','center',COLORS.WHITE,70);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -239,7 +244,7 @@ WaitSecs(.5);
 myFile=fopen('Example1.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,73,[],[],1.5);
 %Need image here (of 1 loss card)
 Screen('Flip',w);
 KbWait;
@@ -247,7 +252,7 @@ Screen('Flip',w);
 WaitSecs(.5);
 
 %1 loss card, -750 loss, +10 gain
-DrawFormattedText(w,'You see 32 unknown cards. The scoreboard shows you that 1 of the cards is a loss card. Each gain card is worth 10 points to you, and the loss card will cost you 750 points. Let us suppose you decide to turn over 7 cards and then stop.','center',wRect(4)-610,COLORS.WHITE,68);
+DrawFormattedText(w,'You see 32 unknown cards. The scoreboard shows you that 1 of the cards is a loss card. Each gain card is worth 10 points to you, and the loss card will cost you 750 points. Let us suppose you decide to turn over 7 cards and then stop.','center',wRect(4)-590,COLORS.WHITE,73);
 DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-45,COLORS.WHITE);
 eGainAmt = 10;
 eLossCards = 1;
@@ -284,7 +289,7 @@ Screen('FillRect',w,rectcolor,rects);
 DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score);
 [imagerects] = DrawImageRects(clicked);
 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
-DrawFormattedText(w,'Luckily, none of the seven cards you turned over happened to be the loss card, so your score for this round was 70. Press space to see the next example.','center',wRect(4)-600,COLORS.WHITE,60);
+DrawFormattedText(w,'Luckily, none of the seven cards you turned over happened to be the loss card, so your score for this round was 70. Press space to see the next example.','center',wRect(4)-580,COLORS.WHITE,73);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -306,12 +311,12 @@ WaitSecs(2);
 myFile=fopen('Example2.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,73,[],[],1.5);
 Screen('Flip',w);
 KbWait();
 WaitSecs(2);
 
-DrawFormattedText(w,'The scoreboard shows you that 3 of these cards are loss cards. ITurning over each gain card is worth 30 points to you, and that turning over a loss card will cost you 250 points. Let us suppose you decide to turn over 10 cards.','center',wRect(4)-610,COLORS.WHITE,68);
+DrawFormattedText(w,'The scoreboard shows you that 3 of these cards are loss cards. Turning over each gain card is worth 30 points to you, and turning over a loss card will cost you 250 points. Let us suppose you decide to turn over 10 cards.','center',wRect(4)-590,COLORS.WHITE,73);
 DrawFormattedText(w,'Press any key to reveal cards.','center',wRect(4)-45,COLORS.WHITE);
 eGainAmt = 30;
 eLossCards = 3;
@@ -359,7 +364,7 @@ DoScoreboard(0,eLossCards,eLossAmt,eGainAmt,etrial_score,1);
 [imagerects, imagerects_fail] = DrawImageRects(clicked,efail_list);
 Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
 Screen('DrawTextures',w,IMAGE.loss,[],imagerects_fail);
-DrawFormattedText(w,'This time, the fourth card you turned was a loss card.  The round immediately will end when you turn over a loss card.  Press space to learn more about this trial.','center',wRect(4)-600,COLORS.WHITE,60);
+DrawFormattedText(w,'This time, the fourth card you turned was a loss card.  The round immediately will end when you turn over a loss card.  Press space to learn more about this trial.','center',wRect(4)-580,COLORS.WHITE,73);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -370,7 +375,7 @@ WaitSecs(2);
 myFile=fopen('Example2reveal.txt','r');
 myText=fgetl(myFile);
 fclose(myFile);
-DrawFormattedText(w,myText,'center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,myText,'center','center',COLORS.WHITE,73,[],[],1.5);
 %Need image here
 Screen('Flip',w);
 KbWait;
@@ -380,7 +385,7 @@ WaitSecs(2);
 
 %% Practice
 
-DrawFormattedText(w,'Now you will complete two practice rounds of the game. Press space to begin.','center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,'You will now complete two practice rounds of the game. \n\nPlease use the mouse to select the cards that you want to turn over. \n\nPress space to begin.','center','center',COLORS.WHITE,70,[],[],1.5);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
@@ -393,28 +398,73 @@ end
 Screen('Flip',w);
 
 %Instructions- Page 9
-DrawFormattedText(w,'Before the game starts, we would like to ask you a few questions about the task.\n Please wait for further instructions from the experimenter','center','center',COLORS.WHITE,100);
+DrawFormattedText(w,'Before the game starts, we would like to ask you a few questions about the task.\n\n Please wait for further instructions from the experimenter','center','center',COLORS.WHITE,70,[],[],1.5);
 %Need image here
 Screen('Flip',w);
-KbName();
+% KbName();
+while 1
+    [dddown,~,cccode] = KbCheck();
+%     endcode = find(ccode);
+    if dddown && find(cccode) == KbName('F12');
+%         if endcode(2) == KbName('LeftShift') && endcode(1) == KbName('q')
+            break
+%         end
+    end
+end
+
 Screen('Flip',w);
 WaitSecs(2);
 
 end
 
 %% Present multiple trials & blocks.
-
-DrawFormattedText(w,'You are now all set to begin. Please press space to begin to Block 1.','center','center',COLORS.WHITE,60,[],[],1.5);
+DrawFormattedText(w,'You are now all set to begin. \n\nPlease press space to continue.','center','center',COLORS.WHITE,70,[],[],1.5);
 Screen('Flip',w);
 KbWait;
 Screen('Flip',w);
 WaitSecs(2);
 
+if Mindfulness == 1
+    myFile=fopen('CONDITION1.txt','r');
+    myText=fgetl(myFile);
+    fclose(myFile);
+    DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
+    Screen('Flip',w);
+    WaitSecs(30);
+else
+    if Mindfulness == 2
+        myFile=fopen('CONDITION2.txt','r');
+        myText=fgetl(myFile);
+        fclose(myFile);
+        DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
+        Screen('Flip',w);
+        WaitSecs(30);
+    else
+        if Mindfulness == 3
+            myFile=fopen('CONDITION2.txt','r');
+            myText=fgetl(myFile);
+            fclose(myFile);
+            DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
+            Screen('Flip',w);
+            WaitSecs(30);
+        else 
+            if Mindfulness == 4
+            myFile=fopen('CONDITION1.txt','r');
+            myText=fgetl(myFile);
+            fclose(myFile);
+            DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
+            Screen('Flip',w);
+            WaitSecs(30);  
+            end
+        end
+    end
+end
+
 DrawFormattedText(w,'Prepare for Block 1.','center','center',COLORS.WHITE,60,[],[],1.5);
 Screen('Flip',w);
 % KbWait;
 % Screen('Flip',w);
-WaitSecs(4);
+WaitSecs(2);
 
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
     for trial = 1:STIM.trials;
@@ -430,8 +480,8 @@ WaitSecs(4);
     end
 %End of Block  
 if block <= STIM.blocks
-        endoblock = sprintf('You have come to end of Block %d. You will now answer some questions before you proceed to the next Block. Press space to continue.',block);
-        DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE, 60);
+        endoblock = sprintf('You have come to the end of Block %d. \n\nNow we want you to answer some questions before you proceed to the next Block.\n\nPress space to continue.',block);
+        DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE,60,[],[],1.5);
         Screen('Flip',w);
         KbWait();
  end
@@ -439,20 +489,21 @@ if block <= STIM.blocks
     
 %     %This is where inter-block questions go.
     %Question Text here.
-    ib_qs = {'How positive were you feeling during the task?\n\n\n Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
-        'How aroused were you feeling during the task?\n\n\n Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard';
-        'How confident were you feeling during the tas?\n\n\n Indicate your response on a scale of 1-7 (1=Not at all and 7=Extremely), by pressing the corresponding number of the keyboard'};
+    ib_qs = {'How PLEASANT are you feeling RIGHT NOW?\n\n\nIndicate your response on the scale below by pressing the corresponding number of the keyboard.\n\n\n\n\n\n\nSCALE: 1=Not at all and 7=Extremely';
+        'How physiologically (bodily) AROUSED are you feeling RIGHT NOW?\n\n\nIndicate your response on the scale below by pressing the corresponding number of the keyboard.\n\n\n\n\n\n\nSCALE: 1=Not at all and 7=Extremely';
+        'How DOMINANT are you feeling RIGHT NOW?\n\n\nIndicate your response on the scale below by pressing the corresponding number of the keyboard.\n\n\n\n\n\n\nSCALE: 1=Not at all and 7=Extremely'
+        'How CONFIDENT are you feeling RIGHT NOW?\n\n\nIndicate your response on the scale below by pressing the corresponding number of the keyboard.\n\n\n\n\n\n\nSCALE: 1=Not at all and 7=Extremely'};
     
-    for ibq = 1:3;
+    for ibq = 1:4;
         
-        DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE,60);
+        DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE,60,[],[],1.5);
         drawRatings();
         Screen('Flip',w);
         
         while 1
             [rate_press, ~, rate_key] = KbCheck();
             if rate_press && any(rate_key(KEY.all))
-                DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE,60);
+                DrawFormattedText(w,ib_qs{ibq},'center','center',COLORS.WHITE,60,[],[],1.5);
                 rating = KbName(find(rate_key,1));
                 rating = str2num(rating(1)); %#ok<*ST2NM>
                 drawRatings(rate_key);
@@ -465,6 +516,8 @@ if block <= STIM.blocks
                     CCT.ques(block).Q2 = rating;
                 elseif ibq == 3;
                     CCT.ques(block).Q3 = rating;
+                elseif ibq == 4;
+                    CCT.ques(block).Q4 = rating;
                 end
                 Screen('Flip',w);
                 WaitSecs(.25);
@@ -564,8 +617,8 @@ CenterTextOnPoint(w,['$' num2str(pay_trial(1))],numsq_textx(1),numsq_texty(1),CO
 CenterTextOnPoint(w,['$' num2str(pay_trial(2))],numsq_textx(2),numsq_texty(2),COLORS.WHITE);
 CenterTextOnPoint(w,['$' num2str(pay_trial(3))],numsq_textx(3),numsq_texty(3),COLORS.WHITE);
 Screen('TextSize',w,oldtextsize);
-DrawFormattedText(w,'You have earned the following amount,\nbased on the random trials selected.','center',wRect(4)/8,COLORS.WHITE);
-DrawFormattedText(w,['Bonus payment: $' sprintf('%0.2f',total_pay) '\n\n\nThis concludes the task.\nPlease alert the experimenter.'],'center',numsq_y2(1)+50,COLORS.WHITE);
+DrawFormattedText(w,'You have earned the following amount,\nbased on the random trials selected.','center',wRect(4)/8,COLORS.WHITE,68,[],[],1.5);
+DrawFormattedText(w,['Bonus payment: $' sprintf('%0.2f',total_pay) '\n\n\nThis concludes the task.\nPlease alert the experimenter.'],'center',numsq_y2(1)+50,COLORS.WHITE,60, [],[],1.5);
 Screen('Flip',w);
 % KbWait();
 CCT.payment = pay_trial';
