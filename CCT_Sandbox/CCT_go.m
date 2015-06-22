@@ -122,7 +122,7 @@ end
 
 %%
 %change this to 0 to fill whole screen
-DEBUG=1;
+DEBUG=0;
 
 %set up the screen and dimensions
 
@@ -539,7 +539,7 @@ if block <= STIM.blocks
     if block < STIM.blocks
         endoblock = sprintf('Prepare for Block %d.',block+1);
     elseif block == STIM.blocks
-        endoblock = 'Now we will choose random trials to pay the bonus money!';
+        endoblock = 'Now we will choose random trials to calculate the bonus points!';
     end
         DrawFormattedText(w,endoblock,'center','center',COLORS.WHITE);
         Screen('Flip',w);
@@ -585,7 +585,7 @@ for rnd_trial = 1:3;
         CenterTextOnPoint(w,s2,numsq_textx(2),numsq_texty(2),COLORS.RED);
         CenterTextOnPoint(w,s3,numsq_textx(3),numsq_texty(3),COLORS.RED);
         Screen('TextSize',w,30);
-        DrawFormattedText(w,'Press the space bar to choose\na trials from each block to payout!','center',wRect(4)/8,COLORS.WHITE);
+        DrawFormattedText(w,'Press the space bar to choose\nthe bonus trials from each block!','center',wRect(4)/8,COLORS.WHITE);
 
         Screen('Flip',w);
 
@@ -599,38 +599,45 @@ for rnd_trial = 1:3;
     end
 end
 
+% Display trials selected.
 Screen('FillRect',w,COLORS.WHITE,squares4nums);
 oldtextsize = Screen('TextSize',w,60);
 CenterTextOnPoint(w,s1,numsq_textx(1),numsq_texty(1),COLORS.RED);
 CenterTextOnPoint(w,s2,numsq_textx(2),numsq_texty(2),COLORS.RED);
 CenterTextOnPoint(w,s3,numsq_textx(3),numsq_texty(3),COLORS.RED);
 Screen('TextSize',w,oldtextsize);
-DrawFormattedText(w,'You have selected the following trials.\nPlease wait while the payout is calculated.','center',wRect(4)/8,COLORS.WHITE);
+DrawFormattedText(w,'You have selected the following trials.\nPlease wait while your points are determined.','center',wRect(4)/8,COLORS.WHITE);
 Screen('Flip',w);
 WaitSecs(5);
 
-pay_trial(1) = CCT.data(trials_selected(1)).trialscore/100;
-pay_trial(2) = CCT.data(STIM.trials+trials_selected(2)).trialscore/100;
-pay_trial(3) = CCT.data(STIM.trials*2 + trials_selected(3)).trialscore/100;
 
-if any(pay_trial < 0)
-    pay_trial(pay_trial<0) = 0;
-end
+% Display points earned.
+pay_trial(1) = CCT.data(trials_selected(1)).trialscore;
+pay_trial(2) = CCT.data(STIM.trials+trials_selected(2)).trialscore;
+pay_trial(3) = CCT.data(STIM.trials*2 + trials_selected(3)).trialscore;
 
-total_pay = sum(pay_trial);
+% if any(pay_trial < 0)
+%     pay_trial(pay_trial<0) = 0;
+% end
 
-CenterTextOnPoint(w,['$' num2str(pay_trial(1))],numsq_textx(1),numsq_texty(1),COLORS.WHITE);
-CenterTextOnPoint(w,['$' num2str(pay_trial(2))],numsq_textx(2),numsq_texty(2),COLORS.WHITE);
-CenterTextOnPoint(w,['$' num2str(pay_trial(3))],numsq_textx(3),numsq_texty(3),COLORS.WHITE);
+% total_pay = sum(pay_trial);
+
+CenterTextOnPoint(w,num2str(pay_trial(1)),numsq_textx(1),numsq_texty(1),COLORS.WHITE);
+CenterTextOnPoint(w,num2str(pay_trial(2)),numsq_textx(2),numsq_texty(2),COLORS.WHITE);
+CenterTextOnPoint(w,num2str(pay_trial(3)),numsq_textx(3),numsq_texty(3),COLORS.WHITE);
 Screen('TextSize',w,oldtextsize);
-DrawFormattedText(w,'You have earned the following amount,\nbased on the random trials selected.','center',wRect(4)/8,COLORS.WHITE,68,[],[],1.5);
-DrawFormattedText(w,['Bonus payment: $' sprintf('%0.2f',total_pay) '\n\n\nThis concludes the task.\nPlease alert the experimenter.'],'center',numsq_y2(1)+50,COLORS.WHITE,60, [],[],1.5);
+DrawFormattedText(w,'You have earned the following points,\nbased on the random trials selected.','center',wRect(4)/8,COLORS.WHITE,68,[],[],1.5);
+% DrawFormattedText(w,['Bonus points: ' sprintf('%d',total_pay) '\n\n\nThis concludes the task.\nPlease alert the experimenter.'],'center',numsq_y2(1)+50,COLORS.WHITE,60, [],[],1.5);
+DrawFormattedText(w,'This concludes the task.\nPlease alert the experimenter.','center',numsq_y2(1)+50,COLORS.WHITE,60, [],[],1.5);
 Screen('Flip',w);
 % KbWait();
-CCT.payment = pay_trial';
+
+% NOTE: This saves the trial number that was chosen for each block in one
+% column and the points in another column. Erik will be confused later.
+CCT.payment = [trials_selected; pay_trial]';
 
 
-%Experimenter presses 'q' and the left shift key simultaneously to end the task & save the file, once they
+%Experimenter presses the F12 key  to end the task & save the file, once they
 %have written down the total payment.
 
 while 1
