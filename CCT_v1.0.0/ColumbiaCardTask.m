@@ -1,11 +1,13 @@
-function CCT()
+function ColumbiaCardTask()
 %This Psychtoolbox script was developed by Erik & Smrithi, based on
-%Figner's Colombia Card Task. Any questions regarding the task or
+%Figner's Columbia Card Task. Any questions regarding the task or
 % its operation, contact Erik (elk@uoregon.edu) or Smrithi 
 % (smrithi@uoregon.edu).
 % 
 % This task has been tested on Matlab 2011 (& later) and Psychtoolbox 3.
-% It has performed admirably on PCs (Windows 7) and OSx 10.7.5
+% It has performed admirably on PCs (Windows 7) and OSx 10.7.5.  To
+% install, download the CCT_v1.0.0 folder and save to a reasonable
+% location. Add the folder location to your Matlab path & save.
 % 
 % Original files are on Github @ github.com/RickyDMT.
 
@@ -25,19 +27,7 @@ ID = input('Subject ID:');
 d = clock;
 Mindfulness = input('Condition:');
 
-% cond = input('Condition:');
-% fail1='Program aborted. Participant number not entered';% error messagewhich is printed to command window
-%  prompt = {'Enter participant number:'};
-%  dlg_title ='New Participant';
-%  num_lines = 1;
-%  def = {'0'};
-%  answer = inputdlg(prompt,dlg_title,num_lines,def);%presents box to enterdata into
-%  switch isempty(answer)
-%      case 1%deals with both cancel and X presses
-%      error(fail1)
-%      case 0
-%          thissub=(answer{1});
-%  end
+
 KbName('UnifyKeyNames');
 
 KEY = struct;
@@ -49,8 +39,6 @@ KEY.FOUR= KbName('4$');
 KEY.FIVE= KbName('5%');
 KEY.SIX= KbName('6^');
 KEY.SEVEN= KbName('7&');
-% KEY.EIGHT= KbName('8*');
-% KEY.NINE= KbName('9(');
 KEY.all = KEY.ONE:KEY.SEVEN;
 
 COLORS = struct;
@@ -83,10 +71,6 @@ CCT.data = struct('Block',[],'Trial',[],'Outcome',[],'trialscore',[],'rt_firstcl
 CCT.info = struct('SubjID',ID,'Date',date,'Time',sprintf('%2.0f%02.0f',d(4),d(5)),'Condition',Mindfulness);
 CCT.ques = struct('Q1',[],'Q2',[],'Q3',[]);
 
-% CCT.var.Block = [[repmat(1,STIM.trials,1); repmat(2,STIM.trials,1)];
-% %This might just be different columns of data represnting each block...?
-
-% CCT.var.Trial= (1:STIM.trials)';
 
 for g = 1:STIM.blocks;
     [lossc, lossamt, gainamt] = BalanceTrials(STIM.trials,1,STIM.lossc,STIM.lossamt,STIM.gainamt);
@@ -111,16 +95,6 @@ for g = 1:STIM.blocks;
     end
 end
     
-%     CCT.var.trial_dur(1:STIM.trials,g) = repmat(18,STIM.trials,1);              %Sets timer for each trial. If same time every time, remove from loop.
-%     CCT.var.num_bad(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[1 3]);      %Loss cards per trial
-%     CCT.var.scorval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[10 30]);   %This is gain amount
-%     CCT.var.lossval(1:STIM.trials,g) = BalanceTrials(STIM.trials,1,[-250 -750]); %This determines loss amount
-    
-
-% CCT.data.trialscore = repmat(-999,STIM.trials,STIM.blocks);
-% CCT.data.cumscore = repmat(-999,STIM.trials,STIM.blocks);             %This is cumulative score (pervert).
-
-
 % Pics for gain/loss
 try
     gain_card = imread('happycard.jpg');
@@ -201,11 +175,7 @@ if biopac == 1;
     end
     outp(0);
 else
-    %These are empty junk .m files that let's the computer think it's
-    %pulsing the BioPac unit.
-    
-    xconfig_io;
-    xoutp;
+    %Do NOTHING!
 end
 
 
@@ -453,37 +423,8 @@ WaitSecs(2);
 
 if Mindfulness == 1 || Mindfulness == 4;
     myFile=fopen('CONDITION1.txt','r');
-%     myText=fgetl(myFile);
-%     fclose(myFile);
-%     DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
-%     Screen('Flip',w);
-%     WaitSecs(30);
 elseif Mindfulness == 2 || Mindfulness == 3;
         myFile=fopen('CONDITION2.txt','r');
-%         myText=fgetl(myFile);
-%         fclose(myFile);
-%         DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
-%         Screen('Flip',w);
-%         WaitSecs(30);
-%     else
-%         if Mindfulness == 3
-%             myFile=fopen('CONDITION2.txt','r');
-%             myText=fgetl(myFile);
-%             fclose(myFile);
-%             DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
-%             Screen('Flip',w);
-%             WaitSecs(30);
-%         else 
-%             if Mindfulness == 4
-%             myFile=fopen('CONDITION1.txt','r');
-%             myText=fgetl(myFile);
-%             fclose(myFile);
-%             DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
-%             Screen('Flip',w);
-%             WaitSecs(30);  
-%             end
-%         end
-%     end
 end
 
     myText=fgetl(myFile);
@@ -495,8 +436,6 @@ end
     
 DrawFormattedText(w,'Prepare for Block 1.','center','center',COLORS.WHITE,60,[],[],1.5);
 Screen('Flip',w);
-% KbWait;
-% Screen('Flip',w);
 WaitSecs(2);
 
  for block = 1:STIM.blocks %To institute blocks, uncomment here, below & above in globals
@@ -506,8 +445,6 @@ WaitSecs(2);
             outp(1);
             WaitSecs(.01);
             outp(0);
-        else
-            xoutp;
         end
 
         trialrow = (block-1)*STIM.trials + trial;
@@ -515,6 +452,7 @@ WaitSecs(2);
         [CCT.data(trialrow).trialscore, CCT.data(trialrow).Outcome, CCT.data(trialrow).boxes, CCT.data(trialrow).time_left, CCT.data(trialrow).rt_firstclick] = DoCCT(trialrow);
         
     end
+    
 %End of Block  
 if block <= STIM.blocks
         endoblock = sprintf('You have come to the end of Block %d. \n\nNow we want you to answer some questions before you proceed to the next Block.\n\nPress space to continue.',block);
@@ -600,15 +538,6 @@ for rnd_trial = 1:3;
             s1 = sprintf('%d',selected(1));
             s2 = sprintf('%d',selected(2));
             s3 = sprintf('%d',selected(3));
-%         elseif rnd_trial == 2;
-%             s1 = sprintf('%d',trials_selected(1));
-%             s2 = sprintf('%d',selected(2));
-%             s3 = sprintf('%d',selected(3));
-%         elseif rnd_trial == 3;
-%             s1 = sprintf('%d',trials_selected(1));
-%             s2 = sprintf('%d',trials_selected(2));
-%             s3 = sprintf('%d',selected(3));
-%         end
         
         Screen('FillRect',w,COLORS.WHITE,squares4nums);
         Screen('TextSize',w,60);
@@ -647,11 +576,6 @@ pay_trial(1) = CCT.data(trials_selected(1)).trialscore;
 pay_trial(2) = CCT.data(STIM.trials+trials_selected(2)).trialscore;
 pay_trial(3) = CCT.data(STIM.trials*2 + trials_selected(3)).trialscore;
 
-% if any(pay_trial < 0)
-%     pay_trial(pay_trial<0) = 0;
-% end
-
-% total_pay = sum(pay_trial);
 
 CenterTextOnPoint(w,num2str(pay_trial(1)),numsq_textx(1),numsq_texty(1),COLORS.WHITE);
 CenterTextOnPoint(w,num2str(pay_trial(2)),numsq_textx(2),numsq_texty(2),COLORS.WHITE);
@@ -705,11 +629,6 @@ catch
     end
 end
 
-
-%% End of task.
-% DrawFormattedText(w,'That concludes this stolen version \n of the Columbia Card Task.','center','center',COLORS.WHITE);
-% Screen('Flip',w);
-% WaitSecs(2);
 
 sca
 
@@ -838,8 +757,6 @@ while telap < DIMS.trial_dur;
                             outp(4);
                             WaitSecs(.01);
                             outp(0);
-                        else
-                            xoutp;
                         end
                         
                         trial_score = trial_score + LossAmt;
@@ -865,8 +782,6 @@ while telap < DIMS.trial_dur;
                             outp(4);
                             WaitSecs(.01);
                             outp(0);
-                        else
-                            xoutp;
                         end
                         
                         Screen('Flip',w);
@@ -896,8 +811,6 @@ while telap < DIMS.trial_dur;
                             outp(2);
                             WaitSecs(.01);
                             outp(0);
-                        else
-                            xoutp;
                         end
                         
                         trial_score = trial_score + GainAmt;
@@ -920,18 +833,9 @@ while telap < DIMS.trial_dur;
                     outp(4);
                     WaitSecs(.01);
                     outp(0);
-                else
-                    xoutp;
                 end
                 
                 
-%                 if ~any(clicked)
-%                     DrawFormattedText(w,'You have selected no cards. Starting new trial.','center',rects(2,end)+45,COLORS.RED);
-%                     rt_first = NaN;
-%                 else
-%                     DrawFormattedText(w,'Moving to next trial!','center',rects(2,end)+45,COLORS.RED);
-%                 end
-%                 rectcolor = Reveal4Color(fail_list);
                 Screen('FillRect',w,rectcolor,rects);
                 if ~any(clicked);
                     rt_first = NaN;
@@ -950,21 +854,6 @@ while telap < DIMS.trial_dur;
         end
     end
       
-%     if any(clicked) %no button was pressed recently; just update clock, re-flip everything else
-%     telap = CountdownClock(tstart,DIMS.trial_dur,rects);
-%     Screen('FillRect',w,rectcolor,rects);
-%     DoScoreboard(trialrow);
-%     Screen('DrawTextures',w,IMAGE.gain,[],imagerects);
-%     Screen('Flip',w);
-%     
-%     else %no button ever pressed; updated & reflip everything
-%     telap = CountdownClock(tstart,DIMS.trial_dur,rects);
-%     Screen('FillRect',w,rectcolor,rects);
-%     DoScoreboard(trialrow);
-%     Screen('Flip',w);
-%     end
-    
-%     FlushEvents();
 end
 
 if telap >= DIMS.trial_dur;
@@ -972,8 +861,6 @@ if telap >= DIMS.trial_dur;
         outp(4);
         WaitSecs(.01);
         outp(0);
-    else
-        xoutp;
     end
     
     DrawFormattedText(w,'Time is up.','center',rects(2,end)+45,COLORS.RED);
