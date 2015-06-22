@@ -122,7 +122,7 @@ end
 
 %%
 %change this to 0 to fill whole screen
-DEBUG=1;
+DEBUG=0;
 
 %set up the screen and dimensions
 
@@ -424,14 +424,14 @@ KbWait;
 Screen('Flip',w);
 WaitSecs(2);
 
-if Mindfulness == 1 || Mindfulness == 4;
+if Mindfulness == 1||4;
     myFile=fopen('CONDITION1.txt','r');
 %     myText=fgetl(myFile);
 %     fclose(myFile);
 %     DrawFormattedText(w,myText,'center','center',COLORS.WHITE,70,[],[],1.5);
 %     Screen('Flip',w);
 %     WaitSecs(30);
-elseif Mindfulness == 2 || Mindfulness == 3;
+elseif Mindfulness == 2||3;
         myFile=fopen('CONDITION2.txt','r');
 %         myText=fgetl(myFile);
 %         fclose(myFile);
